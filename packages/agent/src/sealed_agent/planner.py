@@ -1,4 +1,4 @@
-"""Stub planner (default). Optional SpaceXAI if XAI_API_KEY is set — still no unseal."""
+"""Stub planner (default). Optional Ollama or SpaceXAI — still no unseal."""
 
 from __future__ import annotations
 
@@ -7,6 +7,8 @@ import os
 from typing import Any
 
 from sealed_agent.tools import ALLOWED_TOOLS, Tools
+
+LLM_TIMEOUT_S = 20.0
 
 
 def stub_propose(tools: Tools) -> dict[str, Any]:
@@ -56,13 +58,31 @@ def stub_propose(tools: Tools) -> dict[str, Any]:
     }
 
 
+def _llm_settings() -> tuple[str, str, str] | None:
+    base = (os.environ.get("LLM_BASE_URL") or "").strip()
+    if base:
+        key = (
+            (os.environ.get("LLM_API_KEY") or "").strip()
+            or (os.environ.get("OPENAI_API_KEY") or "").strip()
+            or "ollama"
+        )
+        model = (os.environ.get("LLM_MODEL") or "").strip() or "llama3.2"
+        return base.rstrip("/"), key, model
+    key = (os.environ.get("XAI_API_KEY") or "").strip()
+    if key:
+        model = (os.environ.get("LLM_MODEL") or "").strip() or "grok-4.5"
+        return "https://api.x.ai/v1", key, model
+    return None
+
+
 def llm_propose(tools: Tools) -> dict[str, Any]:
     from openai import OpenAI
 
-    client = OpenAI(
-        api_key=os.environ["XAI_API_KEY"],
-        base_url="https://api.x.ai/v1",
-    )
+    settings = _llm_settings()
+    if settings is None:
+        return stub_propose(tools)
+    base_url, api_key, model = settings
+    client = OpenAI(api_key=api_key, base_url=base_url, timeout=LLM_TIMEOUT_S)
     schemas = [
         {
             "type": "function",
@@ -146,9 +166,10 @@ def llm_propose(tools: Tools) -> dict[str, Any]:
     explanation = ""
     for _ in range(6):
         response = client.chat.completions.create(
-            model="grok-4.5",
+            model=model,
             messages=messages,
             tools=schemas,
+            timeout=LLM_TIMEOUT_S,
         )
         choice = response.choices[0].message
         messages.append(choice.model_dump(exclude_unset=True))
@@ -177,16 +198,15 @@ def llm_propose(tools: Tools) -> dict[str, Any]:
         return stub_propose(tools)
     return {
         "draft": draft,
-        "explanation": explanation
-        or "LLM proposed a draft only; not unsealing.",
+        "explanation": explanation or "LLM proposed a draft only; not unsealing.",
         "planner": "llm",
     }
 
 
 def propose(tools: Tools) -> dict[str, Any]:
-    if os.environ.get("XAI_API_KEY"):
-        try:
-            return llm_propose(tools)
-        except Exception:
-            return stub_propose(tools)
-    return stub_propose(tools)
+    if _llm_settings() is None:
+        return stub_propose(tools)
+    try:
+        return llm_propose(tools)
+    except Exception:
+        return stub_propose(tools)

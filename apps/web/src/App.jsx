@@ -91,8 +91,8 @@ function stepVocab(status) {
 
 const WATCH = {
   handler_latency: "Watch the app for slowness.",
-  redis_down: "Watch login — it should fail closed.",
-  worker_drop: "Watch jobs — some should show dropped.",
+  redis_down: "Watch login — it fail-closes.",
+  worker_drop: "Watch jobs — some are dropped.",
 };
 
 const DEMO_DAY = ["handler_latency", "redis_down", "worker_drop"];
@@ -140,7 +140,7 @@ export default function App() {
     liveStatus === "degraded"
       ? "LIVE degraded"
       : liveStatus === "watch"
-        ? "health unchanged — watch jobs/login"
+        ? "LIVE · health unchanged — watch the app"
         : "LIVE ok";
   const currentStep = gameDay?.steps.find((step) => step.current) || null;
   const dayDone = Boolean(gameDay && gameDay.current_index == null);

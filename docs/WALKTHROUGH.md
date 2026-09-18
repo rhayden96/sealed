@@ -1,38 +1,32 @@
 # Walkthrough
 
-Interview demo. Docker, then http://localhost:5173.
+Console: http://localhost:5173  
+App: http://localhost:5174
 
-**Product choice:** the UI **Approve** button also calls unseal (one click). Clerk is still the only unseal authority. **Unseal** remains if you want the two-step AO path. The agent has no unseal key either way.
+Game day is a wizard. Unseal is still the clerk. The agent has no unseal key.
 
-## Five steps
+## Buttons (in order)
 
-1. **Compose up**  
-   `docker compose up --build`  
-   Open http://localhost:5173  
-   Target `:8080`, control `:8081`, web `:5173`. Catalog loaded. Nothing unsealed.
+1. `docker compose up --build`
+2. Open :5173 → **Game day**.
+3. No active day: one primary **Start demo day**.
+4. Headline becomes **Step 1 of 3 — handler_latency is pending**. **Start demo day** is hidden.
+5. Primary **Approve + unseal**. Never shown while the current step is already unsealed.
+6. Headline: **Step 1 of 3 — handler_latency is unsealed**. Big **Open target app :5174**. Watch slowness.
+7. Primary **Abort this step**. LIVE pill: if `/health` is still ok, **LIVE · health unchanged — watch the app**.
+8. **Step 2 of 3 — redis_down is pending** → **Approve + unseal**. On :5174, login fail-closes.
+9. **Abort this step** → **Step 3 of 3 — worker_drop is pending** → **Approve + unseal**. Watch dropped jobs.
+10. **Abort this step** → **End day**.
 
-2. **Happy latency**  
-   Catalog `handler_latency`, environment `demo`, target `api`, 5s. Create draft. It auto-unseals. Timeline shows draft → unsealed. **Abort / reseal** (or wait 5s) so the single unsealed slot is free.
+Step cards use sealed vocab only: `pending` | `unsealed` | `resealed` | `sealed`.
 
-3. **Abort redis_down**  
-   Catalog `redis_down`, `demo`, target `redis`. Create draft. **Approve** (approve + unseal). `POST http://localhost:8080/login` fail-closed. **Abort / reseal**. Last seal `aborted`.
+## Deny prod (optional)
 
-4. **Agent proposes, does not run**  
-   **Propose**. You get a `worker_drop` draft (`· agent`).  
-   `POST http://localhost:8080/_faults` without `X-Sealed-Token` is `403 not_unsealed`.  
-   Still dark until a human **Unseal** (or Approve + unseal). The agent cannot press that.
-
-5. **Fixture replay (offline story)**  
-   `GET http://localhost:8081/fixtures`  
-   Recorded seals: `handler_latency` `pass`, `redis_down` `aborted`. No inject. No `worker_drop` seal — that draft was never run.
+On **Run**, set environment `prod` and try **Approve + unseal**. Clerk **403**. Nothing injects.
 
 ## 30-second mapping
 
 > **Catalog** — three experiments: `redis_down`, `handler_latency`, `worker_drop`.  
 > **Policy** — demo only, allowlisted targets, ≤20s, one unsealed run, deny prod.  
 > **Clerk** — only unseal authority. Agent proposes drafts. Humans approve/unseal.  
-> **Seal** — immutable run record: `pass` / `fail` / `aborted`. Fixtures replay it.
-
-## Deny prod (optional beat)
-
-Create a draft with environment `prod`. Approve/Unseal → clerk **403**. Nothing injects.
+> **Seal** — immutable run record: `pass` / `fail` / `aborted`.

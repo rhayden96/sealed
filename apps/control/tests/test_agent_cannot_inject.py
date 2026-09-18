@@ -22,6 +22,9 @@ from sealed_control.store import Store
 REPO = Path(__file__).resolve().parents[3]
 
 os.environ.pop("XAI_API_KEY", None)
+os.environ.pop("LLM_BASE_URL", None)
+os.environ.pop("LLM_MODEL", None)
+os.environ.pop("LLM_API_KEY", None)
 
 TOKEN = "test-unseal"
 

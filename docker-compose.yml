@@ -51,6 +51,12 @@ services:
       CATALOG_PATH: /app/experiments/catalog.yaml
       POLICY_PATH: /app/experiments/policy.yaml
       FIXTURES_PATH: /app/fixtures/seals
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      XAI_API_KEY: ${XAI_API_KEY:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./experiments:/app/experiments:ro
       - ./fixtures:/app/fixtures:ro
