@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
-import time
+from copy import deepcopy
 from typing import Any
+
+from pydantic import Field
+
+from sealed_agent.domain import DraftIn, StrictModel, construct_draft
 
 ALLOWED_TOOLS = frozenset(
     {
@@ -30,17 +34,44 @@ FORBIDDEN_TOOLS = frozenset(
 )
 
 
+class SealArgs(StrictModel):
+    seal_id: str | None = Field(default=None, min_length=1, max_length=80)
+
+
+class RunArgs(StrictModel):
+    draft_id: str | None = Field(default=None, min_length=1, max_length=80)
+
+
+class ProposeArgs(DraftIn):
+    environment: str = Field(default="demo", min_length=1, max_length=32, pattern=r"^[a-z][a-z0-9_-]*$")
+
+
+TOOL_SCHEMAS = {
+    "list_experiments": StrictModel,
+    "list_targets": StrictModel,
+    "get_seal": SealArgs,
+    "get_run": RunArgs,
+    "explain_failure": StrictModel,
+    "propose_experiment": ProposeArgs,
+}
+
+assert set(TOOL_SCHEMAS) == ALLOWED_TOOLS
+assert ALLOWED_TOOLS.isdisjoint(FORBIDDEN_TOOLS)
+
+
 class Tools:
-    def __init__(self, catalog: dict[str, Any], policy: dict[str, Any], store: Any) -> None:
-        self.catalog = catalog
-        self.policy = policy
+    def __init__(self, catalog: dict[str, Any], policy: dict[str, Any], store: Any, *, proposal_id: str | None = None) -> None:
+        self.catalog = deepcopy(catalog)
+        self.policy = deepcopy(policy)
         self.store = store
+        self.proposal_id = proposal_id
+        self.proposed_draft: dict[str, Any] | None = None
 
     def names(self) -> frozenset[str]:
         return ALLOWED_TOOLS
 
     def list_experiments(self) -> list[dict[str, Any]]:
-        return list(self.catalog.get("experiments") or [])
+        return deepcopy(self.catalog.get("experiments") or [])
 
     def list_targets(self) -> list[str]:
         return list(self.policy.get("target_allowlist") or [])
@@ -48,6 +79,9 @@ class Tools:
     def get_seal(self, seal_id: str | None = None) -> dict[str, Any] | None:
         if seal_id:
             return self.store.get_seal(seal_id)
+        latest = getattr(self.store, "get_latest_seal", None)
+        if latest:
+            return latest()
         seals = self.store.list_seals()
         if not seals:
             return None
@@ -86,38 +120,23 @@ class Tools:
         params: dict[str, Any] | None = None,
         hypothesis: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        experiments = {item["id"]: item for item in self.list_experiments()}
-        spec = experiments.get(catalog_id)
-        if spec is None:
-            raise ValueError("unknown_catalog_id")
-        duration = (
-            float(duration_s)
-            if duration_s is not None
-            else float(spec.get("default_duration_s") or 0)
+        draft = construct_draft(
+            self.store, self.catalog, catalog_id=catalog_id, target=target,
+            environment=environment, duration_s=duration_s, params=params,
+            hypothesis=hypothesis, source="agent", proposal_id=self.proposal_id,
         )
-        draft = {
-            "id": self.store.new_id("d"),
-            "catalog_id": catalog_id,
-            "environment": environment,
-            "target": target,
-            "duration_s": duration,
-            "params": {**(spec.get("params") or {}), **(params or {})},
-            "hypothesis": hypothesis if hypothesis is not None else spec.get("hypothesis"),
-            "approved": False,
-            "status": "draft",
-            "source": "agent",
-            "created_at": time.time(),
-        }
-        return self.store.put_draft(draft)
+        self.proposed_draft = deepcopy(draft)
+        return draft
 
     def call(self, name: str, **kwargs: Any) -> Any:
         if name not in ALLOWED_TOOLS:
             raise PermissionError(f"tool not allowed: {name}")
         if name in FORBIDDEN_TOOLS:
             raise PermissionError(f"tool forbidden: {name}")
+        validated = TOOL_SCHEMAS[name].model_validate(kwargs).model_dump()
         method = getattr(self, name)
-        result = method(**kwargs)
+        result = method(**validated)
         append = getattr(self.store, "append_trace", None)
         if callable(append):
             append(name, kwargs, result)
-        return result
+        return deepcopy(result)

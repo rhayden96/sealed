@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import socket
 import threading
 import time
@@ -21,18 +20,15 @@ from sealed_control.store import Store
 
 REPO = Path(__file__).resolve().parents[3]
 
-os.environ.pop("XAI_API_KEY", None)
-os.environ.pop("LLM_BASE_URL", None)
-os.environ.pop("LLM_MODEL", None)
-os.environ.pop("LLM_API_KEY", None)
-
 TOKEN = "test-unseal"
 
 
 class FaultIn(BaseModel):
+    run_id: str
     id: str
     duration_s: float | None = None
     params: dict = {}
+    authorization_expires_at: float
 
 
 def _free_port() -> int:
@@ -54,22 +50,25 @@ def _fake_target(injects: list) -> FastAPI:
             raise HTTPException(status_code=403, detail="not_unsealed")
         rec = body.model_dump()
         injects.append(rec)
-        return rec
+        return {**rec, "until": time.time() + body.duration_s, "status": "active"}
 
-    @app.delete("/_faults")
-    async def clear(x_sealed_token: str | None = Header(default=None)) -> dict:
+    @app.delete("/_faults/{run_id}")
+    async def clear(run_id: str, x_sealed_token: str | None = Header(default=None)) -> dict:
         if x_sealed_token != TOKEN:
             raise HTTPException(status_code=403, detail="not_unsealed")
-        injects.append({"id": "clear"})
-        return {"status": "resealed"}
+        injects.append({"id": "clear", "run_id": run_id})
+        return {"run_id": run_id, "cleanup_confirmed": True}
 
     return app
 
 
 @pytest.fixture
-def gated_control() -> tuple[TestClient, list, str]:
+def gated_control(monkeypatch) -> tuple[TestClient, list, str]:
     injects: list = []
-    os.environ["UNSEAL_TOKEN"] = TOKEN
+    for name in ("XAI_API_KEY", "LLM_BASE_URL", "LLM_MODEL", "LLM_API_KEY", "UNSEAL_TOKEN_FILE"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("UNSEAL_TOKEN", TOKEN)
+    monkeypatch.setenv("PLANNER", "stub")
     port = _free_port()
     server = uvicorn.Server(
         uvicorn.Config(
@@ -97,6 +96,7 @@ def gated_control() -> tuple[TestClient, list, str]:
     with TestClient(app) as client:
         yield client, injects, f"http://127.0.0.1:{port}"
     server.should_exit = True
+    thread.join(timeout=5)
 
 
 def _abort_redis_down(client: TestClient) -> None:
@@ -132,7 +132,9 @@ def test_propose_does_not_inject_until_human_unseal(gated_control) -> None:
     assert [item["id"] for item in injects] == []
 
     ungated = httpx.post(
-        f"{target_url}/_faults", json={"id": "worker_drop"}, timeout=5.0
+        f"{target_url}/_faults", json={"id": "worker_drop", "run_id": "untrusted", "duration_s": 5,
+                                     "params": {}, "authorization_expires_at": time.time() + 5},
+        timeout=5.0, trust_env=False,
     )
     assert ungated.status_code == 403
     assert ungated.json()["detail"] == "not_unsealed"

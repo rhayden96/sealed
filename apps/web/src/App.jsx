@@ -1,411 +1,285 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { api } from "./api.js";
+import { useCallback, useEffect, useState } from 'react';
+import { api } from './api.js';
+import { PlannerDrawer } from './PlannerDrawer.jsx';
+import { IconChevron, IconMark, NAV } from './icons.jsx';
+import { ACTIVE, errorText, liveState, resourceState, title } from './domain.js';
+import { useActions, useResource, useRoute } from './hooks.js';
 import {
-  FAULT_ICONS,
-  IconApi,
-  IconChevron,
-  IconDatabase,
-  IconMark,
-  IconQueue,
-  NAV,
-} from "./icons.jsx";
+  ActiveRunBanner,
+  Composer,
+  EvidencePanel,
+  FixturesPanel,
+  LivePanel,
+  RunHistory,
+  SelectedRun,
+} from './panels.jsx';
 
-function formatTime(ts) {
-  if (!ts) return "—";
-  return new Date(ts * 1000).toLocaleTimeString();
-}
-
-function formatDetail(detail) {
-  if (detail == null) return "request failed";
-  if (typeof detail === "string") return detail;
-  if (Array.isArray(detail.reasons)) {
-    return `denied: ${detail.reasons.join(", ")}`;
-  }
-  try {
-    return JSON.stringify(detail);
-  } catch {
-    return String(detail);
-  }
-}
-
-function isEmptyPropose(explanation) {
-  const text = (explanation || "").toLowerCase();
-  return (
-    text.includes("no failed or aborted redis_down") ||
-    text.includes("nothing to propose")
-  );
-}
-
-function buildTimeline(draft, seals) {
-  if (!draft) return [];
-  const events = [{ at: draft.created_at, label: "draft", verdict: "" }];
-  if (draft.approved) {
-    events.push({ at: draft.created_at, label: "approved", verdict: "" });
-  }
-  if (draft.unsealed_at) {
-    events.push({ at: draft.unsealed_at, label: "unsealed", verdict: "" });
-  }
-  if (draft.status === "resealed") {
-    events.push({
-      at: draft.unsealed_until || Date.now() / 1000,
-      label: "resealed",
-      verdict: "",
-    });
-  }
-  if (draft.status === "completed") {
-    events.push({
-      at: draft.unsealed_until,
-      label: "completed",
-      verdict: "",
-    });
-  }
-  const seal = seals
-    .filter((item) => item.draft_id === draft.id)
-    .sort((a, b) => a.created_at - b.created_at)
-    .at(-1);
-  if (seal) {
-    events.push({
-      at: seal.created_at,
-      label: "seal",
-      verdict: seal.verdict,
-    });
-  }
-  return events;
-}
-
-function runPhase(draft) {
-  if (!draft) return "none";
-  if (draft.status === "unsealed") return "unsealed";
-  if (draft.status === "resealed" || draft.status === "completed") {
-    return "completed";
-  }
-  return "draft";
-}
-
-function stepVocab(status) {
-  if (status === "unsealed") return "unsealed";
-  if (status === "resealed") return "resealed";
-  if (status === "completed") return "sealed";
-  return "pending";
-}
-
-const WATCH = {
-  handler_latency: "Watch the app for slowness.",
-  redis_down: "Watch login — it fail-closes.",
-  worker_drop: "Watch jobs — some are dropped.",
-};
-
-const DEMO_DAY = ["handler_latency", "redis_down", "worker_drop"];
-
-const SIDE_KEY = "sealed-sidebar-collapsed";
-const DRAWER_H_KEY = "sealed-agent-height";
-const DRAWER_C_KEY = "sealed-agent-collapsed";
+const DEMO_DAY = ['handler_latency', 'redis_down', 'worker_drop'];
+const TARGET_URL =
+  window.SEALED_CONFIG?.targetAppUrl ||
+  import.meta.env.VITE_TARGET_APP_URL ||
+  'http://localhost:5174';
 
 export default function App() {
-  const [collapsed, setCollapsed] = useState(() => {
-    try {
-      return localStorage.getItem(SIDE_KEY) === "1";
-    } catch {
-      return false;
-    }
-  });
-  const [panel, setPanel] = useState("ops");
-  const [catalog, setCatalog] = useState([]);
-  const [drafts, setDrafts] = useState([]);
-  const [seals, setSeals] = useState([]);
-  const [fixtures, setFixtures] = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
-  const [catalogId, setCatalogId] = useState("handler_latency");
-  const [error, setError] = useState("");
-  const [helper, setHelper] = useState("");
-  const [health, setHealth] = useState(null);
-  const [metrics, setMetrics] = useState(null);
-  const [controlDown, setControlDown] = useState(false);
-  const [gameDay, setGameDay] = useState(null);
-  const [agentTrace, setAgentTrace] = useState([]);
-  const [plannerName, setPlannerName] = useState("stub");
-  const [lastTool, setLastTool] = useState("");
-  const [drawerCollapsed, setDrawerCollapsed] = useState(() => {
-    try {
-      return localStorage.getItem(DRAWER_C_KEY) === "1";
-    } catch {
-      return false;
-    }
-  });
-  const [drawerHeight, setDrawerHeight] = useState(() => {
-    try {
-      const raw = Number(localStorage.getItem(DRAWER_H_KEY));
-      return Number.isFinite(raw) && raw >= 40 ? raw : 160;
-    } catch {
-      return 160;
-    }
-  });
-  const logEnd = useRef(null);
-  const drag = useRef(null);
-
-  const selected = drafts.find((d) => d.id === selectedId) || null;
-  const experiment = catalog.find((item) => item.id === catalogId);
-  const lastSeal = useMemo(
-    () => [...seals].sort((a, b) => b.created_at - a.created_at)[0] || null,
-    [seals],
+  const [route, navigate] = useRoute();
+  const [collapsed, setCollapsed] = useState(false);
+  const [catalogId, setCatalogId] = useState('handler_latency');
+  const [environment, setEnvironment] = useState('demo');
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('');
+  const [offset, setOffset] = useState(0);
+  const [now, setNow] = useState(Date.now());
+  const [decision, setDecision] = useState(null);
+  const [proposal, setProposal] = useState(null);
+  const [proposalId, setProposalId] = useState('');
+  const actions = useActions();
+  const catalog = useResource(api.catalog, { interval: 0 });
+  const policy = useResource(api.policy, { interval: 0 });
+  const fixtures = useResource(api.fixtures, { interval: 0 });
+  const control = useResource(api.controlHealth);
+  const active = useResource(api.activeRun);
+  const health = useResource(api.health);
+  const metrics = useResource(api.metrics);
+  const days = useResource(api.gameDays, { interval: 4000 });
+  const trace = useResource(api.agentTrace, { interval: 3000 });
+  const draftLoader = useCallback(
+    (options) =>
+      api.drafts({ limit: 25, offset, q: search, ...(status ? { status } : {}) }, options),
+    [offset, search, status],
   );
-  const timeline = buildTimeline(selected, seals);
-  const phase = runPhase(selected);
-  const liveDraft = drafts.find((d) => d.status === "unsealed");
-  const healthMoved = health?.status === "degraded";
-  const liveStatus = healthMoved
-    ? "degraded"
-    : liveDraft
-      ? "watch"
-      : "ok";
-  const livePill =
-    liveStatus === "degraded"
-      ? "LIVE degraded"
-      : liveStatus === "watch"
-        ? "LIVE · health unchanged — watch the app"
-        : "LIVE ok";
-  const currentStep = gameDay?.steps.find((step) => step.current) || null;
-  const dayDone = Boolean(gameDay && gameDay.current_index == null);
-  const currentVocab = currentStep ? stepVocab(currentStep.status) : "pending";
+  const drafts = useResource(draftLoader);
+  const selectedLoader = useCallback((options) => api.draft(route.run, options), [route.run]);
+  const selectedResource = useResource(selectedLoader, {
+    enabled: Boolean(route.run),
+  });
+  const eventLoader = useCallback((options) => api.events(route.run, options), [route.run]);
+  const events = useResource(eventLoader, { enabled: Boolean(route.run) });
+  const sealLoader = useCallback((options) => api.runSeal(route.run, options), [route.run]);
+  const sealResource = useResource(sealLoader, { enabled: Boolean(route.run) });
+  const dayLoader = useCallback((options) => api.gameDay(route.day, options), [route.day]);
+  const dayResource = useResource(dayLoader, { enabled: Boolean(route.day) });
+  const selected =
+    selectedResource.data?.id === route.run
+      ? selectedResource.data
+      : drafts.data?.find((run) => run.id === route.run);
+  const seal = sealResource.data?.draft_id === route.run ? sealResource.data : null;
+  const day = dayResource.data?.id === route.day ? dayResource.data : null;
+  const currentStep = day?.steps?.find((step) => step.current);
+  const healthState = liveState(health, now);
+  const controlState = resourceState(control, now);
 
-  function toggleCollapsed() {
-    setCollapsed((current) => {
-      const next = !current;
-      try {
-        localStorage.setItem(SIDE_KEY, next ? "1" : "0");
-      } catch {
-        /* ignore */
-      }
-      return next;
-    });
-  }
-
-  const refreshControl = useCallback(async () => {
-    try {
-      await api.controlHealth();
-      setControlDown(false);
-    } catch {
-      setControlDown(true);
-      return;
-    }
-    const [nextCatalog, nextDrafts, nextSeals, nextFixtures] = await Promise.all([
-      api.catalog(),
-      api.drafts(),
-      api.seals(),
-      api.fixtures().catch(() => ({ seals: [] })),
-    ]);
-    setCatalog(nextCatalog.experiments || []);
-    setDrafts(nextDrafts);
-    setSeals(nextSeals);
-    setFixtures(nextFixtures.seals || []);
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
   }, []);
-
-  const refreshLive = useCallback(async () => {
-    const [nextHealth, nextMetrics] = await Promise.all([
-      api.health(),
-      api.metrics(),
-    ]);
-    setHealth(nextHealth);
-    setMetrics(nextMetrics);
-  }, []);
-
   useEffect(() => {
-    refreshControl().catch((err) =>
-      setError(formatDetail(err.detail || err.message)),
-    );
-    refreshLive().catch(() => {});
-  }, [refreshControl, refreshLive]);
-
+    setDecision(null);
+  }, [route.run]);
   useEffect(() => {
-    const id = setInterval(() => refreshControl().catch(() => {}), 2000);
-    return () => clearInterval(id);
-  }, [refreshControl]);
-
-  useEffect(() => {
-    const id = setInterval(() => refreshLive().catch(() => {}), 2000);
-    return () => clearInterval(id);
-  }, [refreshLive]);
-
-  useEffect(() => {
-    if (!gameDay?.id) return undefined;
-    const id = setInterval(() => {
-      api.gameDay(gameDay.id).then(setGameDay).catch(() => {});
-    }, 2000);
-    return () => clearInterval(id);
-  }, [gameDay?.id]);
-
-  useEffect(() => {
-    if (drawerCollapsed) return undefined;
-    let cancelled = false;
-    async function pull() {
-      try {
-        const snap = await api.agentTrace();
-        if (cancelled) return;
-        setAgentTrace(snap.trace || []);
-        setPlannerName(snap.planner || "stub");
-        setLastTool(snap.last_tool || "");
-      } catch {
-        /* ignore */
-      }
+    if (!route.run) {
+      const candidate = active.data?.id || drafts.data?.at(-1)?.id;
+      if (candidate) navigate({ run: candidate }, true);
     }
-    pull();
-    const id = setInterval(pull, 2000);
-    return () => {
-      cancelled = true;
-      clearInterval(id);
-    };
-  }, [drawerCollapsed]);
-
+  }, [route.run, active.data, drafts.data, navigate]);
   useEffect(() => {
-    logEnd.current?.scrollIntoView({ block: "end" });
-  }, [agentTrace, drawerCollapsed]);
-
-  function persistDrawer(height, collapsed) {
-    try {
-      localStorage.setItem(DRAWER_H_KEY, String(height));
-      localStorage.setItem(DRAWER_C_KEY, collapsed ? "1" : "0");
-    } catch {
-      /* ignore */
-    }
-  }
-
-  function onSplitDown(event) {
-    event.preventDefault();
-    drag.current = { startY: event.clientY, startH: drawerHeight };
-    function move(ev) {
-      if (!drag.current) return;
-      const max = window.innerHeight * 0.5;
-      const next = Math.min(
-        max,
-        Math.max(40, drag.current.startH + (drag.current.startY - ev.clientY)),
+    if (!route.day) {
+      const candidate = days.data?.find(
+        (item) => item.status === 'open' || item.status === 'ending',
       );
-      setDrawerHeight(next);
-      persistDrawer(next, false);
-      setDrawerCollapsed(false);
+      if (candidate) navigate({ day: candidate.id }, true);
     }
-    function up() {
-      drag.current = null;
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
-    }
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
+  }, [route.day, days.data, navigate]);
+
+  function refreshMutable() {
+    for (const resource of [
+      active,
+      drafts,
+      selectedResource,
+      events,
+      sealResource,
+      days,
+      dayResource,
+      health,
+      metrics,
+      trace,
+    ])
+      resource.refresh();
+  }
+  function inspect(runId, view = route.view) {
+    navigate({ run: runId, view });
   }
 
-  function toggleDrawer() {
-    setDrawerCollapsed((current) => {
-      const next = !current;
-      persistDrawer(drawerHeight, next);
-      return next;
+  function createDraft() {
+    const experiment = catalog.data?.experiments?.find((item) => item.id === catalogId);
+    if (!experiment) return;
+    return actions.act('create', async () => {
+      try {
+        const run = await api.createDraft({
+          catalog_id: experiment.id,
+          environment,
+          target: experiment.allowed_targets[0],
+          duration_s: experiment.default_duration_s,
+        });
+        inspect(run.id, 'ops');
+        actions.setNotice(`${title(run.catalog_id)} ${run.id}: ${run.status}.`);
+      } catch (error) {
+        if (error.detail?.draft_id) inspect(error.detail.draft_id, 'ops');
+        throw error;
+      } finally {
+        refreshMutable();
+      }
     });
   }
-
-  async function createDraft() {
-    if (!experiment) return;
-    setError("");
-    setHelper("");
-    try {
-      const draft = await api.createDraft({
-        catalog_id: experiment.id,
-        environment: "demo",
-        target: experiment.allowed_targets?.[0] || "api",
-        duration_s: Number(experiment.default_duration_s ?? 5),
-      });
-      setSelectedId(draft.id);
-      await refreshControl();
-    } catch (err) {
-      setError(formatDetail(err.detail || err.message));
-    }
-  }
-
-  async function approveAndUnseal() {
-    if (!selected) return;
-    setError("");
-    setHelper("");
-    try {
-      await api.approve(selected.id);
-      await api.unseal(selected.id);
-      await refreshControl();
-      await refreshLive();
-    } catch (err) {
-      setError(formatDetail(err.detail || err.message));
-      await refreshControl();
-    }
-  }
-
-  async function abort() {
-    if (!selected) return;
-    setError("");
-    setHelper("");
-    try {
-      await api.reseal(selected.id);
-      await refreshControl();
-      await refreshLive();
-    } catch (err) {
-      setError(formatDetail(err.detail || err.message));
-    }
-  }
-
-  async function unsealOnly() {
-    if (!selected) return;
-    setError("");
-    setHelper("");
-    try {
-      await api.unseal(selected.id);
-      await refreshControl();
-      await refreshLive();
-    } catch (err) {
-      setError(formatDetail(err.detail || err.message));
-    }
-  }
-
-  async function propose() {
-    setError("");
-    setHelper("");
-    try {
-      const result = await api.propose();
-      if (result.draft?.id) {
-        setSelectedId(result.draft.id);
-        setHelper("");
-        setPanel("ops");
-      } else {
-        setHelper(
-          result.explanation ||
-            "No failed or aborted redis_down seal; nothing to propose.",
-        );
+  function approveOnly(id) {
+    return actions.act(`run:${id}`, async () => {
+      try {
+        await api.approve(id);
+        actions.setNotice(`Approval saved for ${id}. The clerk has not unsealed this draft.`);
+      } finally {
+        refreshMutable();
       }
-      await refreshControl();
-    } catch (err) {
-      const text = formatDetail(err.detail || err.message);
-      if (isEmptyPropose(text)) setHelper(text);
-      else setError(text);
-    }
+    });
   }
-
-  const canUnseal =
-    selected &&
-    selected.status !== "unsealed" &&
-    selected.status !== "resealed" &&
-    selected.status !== "completed";
+  function startRun(id) {
+    return actions.act(`run:${id}`, async () => {
+      let approvalSaved = false;
+      try {
+        const current = await api.draft(id);
+        if (!current.approved) await api.approve(id);
+        approvalSaved = true;
+        const result = await api.unseal(id);
+        actions.setNotice(`${title(result.catalog_id)} ${id}: ${result.status}.`);
+      } catch (error) {
+        throw new Error(
+          `${approvalSaved ? `Approval is saved for ${id}. Unseal did not complete. Inspect its current state before retrying. ` : ''}${errorText(error)}`,
+        );
+      } finally {
+        refreshMutable();
+      }
+    });
+  }
+  function abortRun(id) {
+    return actions.act(`abort:${id}`, async () => {
+      try {
+        const result = await api.reseal(id);
+        actions.setNotice(
+          `${id}: ${result.draft?.status === 'resealed' ? 'resealed; target cleanup confirmed. Inspect recovery evidence for its outcome.' : 'reseal requested. Ownership remains until cleanup and recovery checks finish.'}`,
+        );
+      } finally {
+        refreshMutable();
+      }
+    });
+  }
+  function evaluateRun(id) {
+    return actions.act(`run:${id}`, async () => {
+      const result = await api.evaluate(id);
+      setDecision({ runId: id, evaluatedAt: Date.now(), ...result });
+      actions.setNotice(
+        `${id}: policy ${result.allowed ? 'allows unseal' : 'denies unseal'}. No injection requested.`,
+      );
+    });
+  }
+  function propose() {
+    return actions.act('propose', async () => {
+      const id = crypto.randomUUID();
+      setProposalId(id);
+      try {
+        const result = await api.propose({ idempotencyKey: id });
+        setProposal(result);
+        if (result.draft?.id) inspect(result.draft.id, 'ops');
+        actions.setNotice(
+          `Planner requested ${result.requested_provider || 'unknown'}, used ${result.actual_provider || result.planner || 'unknown'}; ${result.outcome}. ${result.explanation || ''}`,
+        );
+      } finally {
+        refreshMutable();
+      }
+    });
+  }
+  function cancelProposal(id) {
+    return actions.act('cancel-proposal', async () => {
+      await api.cancelProposal(id);
+      actions.setNotice(`Cancellation requested for proposal ${id}.`);
+    });
+  }
+  function createDay() {
+    return actions.act('day-create', async () => {
+      try {
+        const result = await api.createGameDay(DEMO_DAY);
+        navigate({ day: result.id, view: 'gameday' });
+        actions.setNotice(`Game day ${result.id} saved. All steps are drafts.`);
+      } finally {
+        refreshMutable();
+      }
+    });
+  }
+  function endDay(id) {
+    return actions.act(`day-end:${id}`, async () => {
+      try {
+        await api.endGameDay(id);
+        actions.setNotice(
+          `Game day ${id} ended. Remaining drafts are cancelled; any active step is resealing.`,
+        );
+      } finally {
+        refreshMutable();
+      }
+    });
+  }
+  const historyPanel = (
+    <RunHistory
+      resource={drafts}
+      selectedId={route.run}
+      search={search}
+      setSearch={setSearch}
+      status={status}
+      setStatus={setStatus}
+      offset={offset}
+      setOffset={setOffset}
+      onSelect={(id) => inspect(id)}
+    />
+  );
+  const runPanel = (
+    <SelectedRun
+      run={selected}
+      resource={selectedResource}
+      now={now}
+      decision={decision?.runId === route.run ? decision : selected?.policy_decision}
+      pending={actions.pending[`run:${route.run}`]}
+      aborting={actions.pending[`abort:${route.run}`]}
+      onApprove={approveOnly}
+      onStart={startRun}
+      onAbort={abortRun}
+      onEvaluate={evaluateRun}
+    />
+  );
+  const evidencePanel = (
+    <EvidencePanel
+      run={selected}
+      seal={seal}
+      events={events.data}
+      eventError={events.error}
+      sealError={sealResource.error}
+    />
+  );
 
   return (
-    <div className={collapsed ? "shell collapsed" : "shell"}>
+    <div className={collapsed ? 'shell collapsed' : 'shell'}>
       <aside className="sidebar">
         <button
-          type="button"
           className="side-toggle"
-          onClick={toggleCollapsed}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-expanded={!collapsed}
+          onClick={() => setCollapsed((value) => !value)}
         >
           <IconChevron left={!collapsed} />
         </button>
-        <nav className="nav">
+        <nav className="nav" aria-label="Main navigation">
           {NAV.map(({ id, label, Icon }) => (
             <button
               key={id}
-              type="button"
-              className={panel === id ? "active" : ""}
-              onClick={() => setPanel(id)}
+              className={route.view === id ? 'active' : ''}
+              aria-label={label}
+              aria-current={route.view === id ? 'page' : undefined}
+              onClick={() => navigate({ view: id })}
               title={label}
             >
               <Icon />
@@ -413,397 +287,182 @@ export default function App() {
             </button>
           ))}
         </nav>
+        <p className="sidebar-caption">Nothing injects until policy unseals it.</p>
       </aside>
-
-      <div className="main">
+      <main className="main">
         <header className="topbar">
           <div className="mark">
             <IconMark />
             Sealed
           </div>
           <span className="env">demo</span>
-          <span className={`pill ${liveStatus}`}>{livePill}</span>
-          <a className="target-link" href="http://localhost:5174">
-            Open target app
+          <span className={`pill ${healthState}`}>Target {healthState}</span>
+          <a className="target-link" href={TARGET_URL} target="_blank" rel="noopener noreferrer">
+            Open target app ↗
           </a>
         </header>
-        {controlDown ? (
-          <div className="banner">Control unreachable. Start the stack, then refresh.</div>
-        ) : null}
-
+        <ActiveRunBanner
+          resource={active}
+          now={now}
+          pending={actions.pending[`abort:${active.data?.id}`]}
+          onAbort={abortRun}
+          onInspect={(id) => inspect(id, 'ops')}
+        />
+        {['stale', 'unavailable'].includes(controlState) && (
+          <div className="banner" role="status">
+            Control {controlState}. Live run information may be stale. Offline fixture replay
+            remains available.
+          </div>
+        )}
+        <div className="feedback" aria-live="polite">
+          {actions.notice && (
+            <p className="helper" role="status">
+              {actions.notice}
+            </p>
+          )}
+          {actions.error && (
+            <p className="error" role="alert">
+              {actions.error}
+            </p>
+          )}
+        </div>
         <div className="content">
-          {panel === "ops" ? (
-            <div className="ops">
-              <section className="panel" id="sec-live">
-                <h2>Live</h2>
-                <p className={`status-word ${healthMoved ? "degraded" : "ok"}`}>
-                  {healthMoved ? "DEGRADED" : "OK"}
-                </p>
-                <div className="tiles">
-                  <article className={`tile ${health?.api === "down" ? "down" : "ok"}`}>
-                    <header>
-                      <IconApi /> API
-                    </header>
-                    <strong>{health?.api ?? "—"}</strong>
-                  </article>
-                  <article
-                    className={`tile ${health?.redis === "down" ? "down" : "ok"}`}
-                  >
-                    <header>
-                      <IconDatabase /> Redis
-                    </header>
-                    <strong>{health?.redis ?? "—"}</strong>
-                  </article>
-                  <article
-                    className={`tile ${health?.worker === "down" ? "down" : "ok"}`}
-                  >
-                    <header>
-                      <IconQueue /> Worker
-                    </header>
-                    <strong>{health?.worker ?? "—"}</strong>
-                  </article>
+          {route.view === 'ops' && (
+            <>
+              <div className="ops">
+                <div className="ops-right">
+                  <LivePanel health={health} metrics={metrics} now={now} activeRun={active.data} />
+                  {historyPanel}
                 </div>
-                <p className="stats">
-                  <span>
-                    p95 <b>{metrics ? Number(metrics.p95_ms).toFixed(0) : "—"}</b> ms
-                  </span>
-                  <span>
-                    error <b>{metrics ? Number(metrics.error_rate).toFixed(2) : "—"}</b>
-                  </span>
-                  <span>
-                    inflight <b>{metrics?.inflight ?? "—"}</b>
-                  </span>
-                </p>
-              </section>
+                <div className="ops-right">
+                  <Composer
+                    catalog={catalog.data?.experiments || []}
+                    policy={policy.data}
+                    catalogId={catalogId}
+                    setCatalogId={setCatalogId}
+                    environment={environment}
+                    setEnvironment={setEnvironment}
+                    pending={actions.pending.create}
+                    onCreate={createDraft}
+                    onPropose={propose}
+                    proposing={actions.pending.propose}
+                    locked={Boolean(active.data)}
+                  />
+                  {(catalog.error || policy.error) && (
+                    <div className="error">
+                      Configuration unavailable.{' '}
+                      <button
+                        className="ghost"
+                        onClick={() => {
+                          catalog.refresh();
+                          policy.refresh();
+                        }}
+                      >
+                        Retry configuration
+                      </button>
+                    </div>
+                  )}
+                  {runPanel}
+                </div>
+              </div>
+              {evidencePanel}
+            </>
+          )}
+          {route.view === 'tape' && (
+            <div className="tape-layout">
+              <div>{historyPanel}</div>
               <div className="ops-right">
-                <section className="panel" id="sec-catalog">
-                  <h2>Catalog</h2>
-                  <div className="catalog-grid">
-                    {catalog.map((item) => {
-                      const Icon = FAULT_ICONS[item.id] || IconApi;
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          className={item.id === catalogId ? "fault active" : "fault"}
-                          onClick={() => {
-                            setCatalogId(item.id);
-                            setHelper("");
-                            setError("");
-                          }}
-                        >
-                          <Icon />
-                          <h3>{item.id}</h3>
-                          <p>
-                            {item.description} · {item.default_duration_s}s ·{" "}
-                            {(item.allowed_targets || []).join(", ")}
-                          </p>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </section>
-                <section className="panel" id="sec-run">
-                  <h2>Run</h2>
-                  <p className="run-meta">
-                    {experiment ? (
-                      <>
-                        <strong>{experiment.id}</strong> · demo ·{" "}
-                        {experiment.allowed_targets?.[0]} ·{" "}
-                        {experiment.default_duration_s}s
-                      </>
-                    ) : (
-                      "Select an experiment."
-                    )}
-                    {selected ? (
-                      <>
-                        <br />
-                        {selected.id} · {selected.status}
-                        {selected.source === "agent" ? " · agent" : ""}
-                      </>
-                    ) : null}
-                  </p>
-                  {phase === "none" || phase === "completed" ? (
-                    <button
-                      type="button"
-                      className="primary"
-                      disabled={!experiment}
-                      onClick={createDraft}
-                    >
-                      {phase === "completed" ? "New draft" : "Create draft"}
-                    </button>
-                  ) : null}
-                  {phase === "draft" ? (
-                    <button
-                      type="button"
-                      className="primary"
-                      onClick={approveAndUnseal}
-                    >
-                      Approve + unseal
-                    </button>
-                  ) : null}
-                  {phase === "unsealed" ? (
-                    <button type="button" className="primary abort" onClick={abort}>
-                      Abort / reseal
-                    </button>
-                  ) : null}
-                  <div className="ghosts">
-                    <button
-                      type="button"
-                      className="ghost"
-                      disabled={!canUnseal}
-                      onClick={unsealOnly}
-                    >
-                      Unseal
-                    </button>
-                    <button type="button" className="ghost" onClick={propose}>
-                      Propose
-                    </button>
-                  </div>
-                  {helper ? <p className="helper">{helper}</p> : null}
-                  {error && panel === "ops" ? <p className="error">{error}</p> : null}
-                </section>
+                {runPanel}
+                {evidencePanel}
               </div>
             </div>
-          ) : null}
-
-          {panel === "gameday" ? (
-            <section className="panel">
+          )}
+          {route.view === 'fixtures' && <FixturesPanel resource={fixtures} />}
+          {route.view === 'gameday' && (
+            <section className="panel" aria-label="Game day">
               <h2>Game day</h2>
-              {!gameDay ? (
+              <p className="helper">
+                A resumable sequence of draft experiments. Aborting a step allows progression;
+                ending the day cancels all remaining steps.
+              </p>
+              <div className="action-row">
                 <button
-                  type="button"
                   className="primary"
-                  onClick={async () => {
-                    setError("");
-                    try {
-                      const day = await api.createGameDay(DEMO_DAY);
-                      setGameDay(day);
-                    } catch (err) {
-                      setError(formatDetail(err.detail || err.message));
-                    }
-                  }}
+                  disabled={actions.pending['day-create']}
+                  onClick={createDay}
                 >
-                  Start demo day
+                  {actions.pending['day-create'] ? 'Creating day…' : 'Create demo day'}
                 </button>
-              ) : (
+              </div>
+              <label className="field">
+                Saved game day
+                <select
+                  value={route.day}
+                  onChange={(event) => navigate({ day: event.target.value })}
+                >
+                  <option value="">Select a game day</option>
+                  {days.data?.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.id} · {item.status}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {days.error && <p className="error">Game days stale: {days.error}</p>}
+              {day && (
                 <>
-                  <div className="gd-head">
-                    <p className="gd-headline">
-                      {dayDone
-                        ? "Day complete"
-                        : `Step ${currentStep.index + 1} of ${gameDay.steps.length} — ${currentStep.catalog_id} is ${currentVocab}`}
-                    </p>
-                    {currentVocab === "unsealed" ? (
-                      <a className="gd-open" href="http://localhost:5174">
-                        Open target app :5174
-                      </a>
-                    ) : null}
-                  </div>
-                  {currentVocab === "unsealed" ? (
-                    <p className="helper">
-                      {WATCH[currentStep.catalog_id] ||
-                        "Watch the target app."}
-                    </p>
-                  ) : null}
-
+                  <h3>
+                    {day.id} · {day.status}
+                  </h3>
                   <div className="gd-cards">
-                    {gameDay.steps.map((step) => {
-                      const vocab = stepVocab(step.status);
-                      return (
-                        <article
-                          key={step.draft_id}
-                          className={
-                            step.current ? "gd-card current" : "gd-card"
-                          }
-                        >
-                          <span className="muted">
-                            Step {step.index + 1}
-                          </span>
-                          <strong>{step.catalog_id}</strong>
-                          <span className={`gd-state ${vocab}`}>{vocab}</span>
-                        </article>
-                      );
-                    })}
+                    {day.steps.map((step) => (
+                      <article
+                        className={`gd-card ${step.current ? 'current' : ''}`}
+                        key={step.draft_id}
+                      >
+                        <span>Step {step.index + 1}</span>
+                        <b>{title(step.catalog_id)}</b>
+                        <code>{step.draft_id}</code>
+                        <span>{step.status}</span>
+                        <button className="ghost" onClick={() => inspect(step.draft_id, 'ops')}>
+                          Inspect {step.current ? 'current' : 'saved'} step
+                        </button>
+                      </article>
+                    ))}
                   </div>
-
-                  {dayDone ? (
+                  {currentStep && ACTIVE.has(currentStep.status) && (
                     <button
-                      type="button"
-                      className="primary"
-                      onClick={() => {
-                        setGameDay(null);
-                        setError("");
-                      }}
-                    >
-                      End day
-                    </button>
-                  ) : currentVocab === "unsealed" ? (
-                    <button
-                      type="button"
                       className="primary abort"
-                      onClick={async () => {
-                        setError("");
-                        try {
-                          const result = await api.abortGameDay(gameDay.id);
-                          setGameDay(result.game_day);
-                          await refreshLive();
-                        } catch (err) {
-                          setError(formatDetail(err.detail || err.message));
-                        }
-                      }}
+                      disabled={actions.pending[`abort:${currentStep.draft_id}`]}
+                      onClick={() => abortRun(currentStep.draft_id)}
                     >
-                      Abort this step
+                      Abort current step
                     </button>
-                  ) : (
+                  )}
+                  {['open', 'ending'].includes(day.status) && (
                     <button
-                      type="button"
-                      className="primary"
-                      onClick={async () => {
-                        if (!currentStep) return;
-                        setError("");
-                        try {
-                          await api.approve(currentStep.draft_id);
-                          await api.unseal(currentStep.draft_id);
-                          setGameDay(await api.gameDay(gameDay.id));
-                          await refreshLive();
-                        } catch (err) {
-                          setError(formatDetail(err.detail || err.message));
-                          setGameDay(await api.gameDay(gameDay.id));
-                        }
-                      }}
+                      className="ghost"
+                      disabled={actions.pending[`day-end:${day.id}`]}
+                      onClick={() => endDay(day.id)}
                     >
-                      Approve + unseal
+                      End game day & cancel remaining steps
                     </button>
                   )}
                 </>
               )}
-              {error ? <p className="error">{error}</p> : null}
+              {dayResource.error && <p className="error">{dayResource.error}</p>}
             </section>
-          ) : null}
-
-          {panel === "tape" ? (
-            <section className="panel">
-              <h2>Tape</h2>
-              {timeline.length === 0 ? (
-                <p className="helper">No run selected.</p>
-              ) : (
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>Event</th>
-                      <th>Verdict</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {timeline.map((event, index) => (
-                      <tr key={`${event.label}-${index}`}>
-                        <td>
-                          <time>{formatTime(event.at)}</time>
-                        </td>
-                        <td>{event.label}</td>
-                        <td>
-                          {event.verdict ? (
-                            <span className={`verdict ${event.verdict}`}>
-                              {event.verdict.toUpperCase()}
-                            </span>
-                          ) : (
-                            <span className="muted">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-              <div className="seal-card">
-                {lastSeal ? (
-                  <>
-                    <span className="muted">
-                      {lastSeal.id} · {lastSeal.catalog_id} · {lastSeal.draft_id}
-                    </span>
-                    <span className={`verdict ${lastSeal.verdict}`}>
-                      {lastSeal.verdict.toUpperCase()}
-                    </span>
-                  </>
-                ) : (
-                  <span className="muted">No seals yet.</span>
-                )}
-              </div>
-            </section>
-          ) : null}
-
-          {panel === "fixtures" ? (
-            <section className="panel">
-              <h2>Fixtures</h2>
-              <p className="helper">Replay only. Does not unseal or inject.</p>
-              {fixtures.length === 0 ? (
-                <p className="helper">No fixtures loaded.</p>
-              ) : (
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Id</th>
-                      <th>Catalog</th>
-                      <th>Verdict</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {fixtures.map((seal) => (
-                      <tr key={seal.id}>
-                        <td>{seal.id}</td>
-                        <td>{seal.catalog_id}</td>
-                        <td>
-                          <span className={`verdict ${seal.verdict}`}>
-                            {(seal.verdict || "").toUpperCase()}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </section>
-          ) : null}
-        </div>
-
-        <aside
-          className="drawer"
-          style={{ height: drawerCollapsed ? 40 : drawerHeight }}
-        >
-          <div
-            className="drawer-split"
-            onMouseDown={onSplitDown}
-            role="separator"
-            aria-orientation="horizontal"
-          />
-          <div className="drawer-head">
-            <b>AGENT</b>
-            <span>{plannerName}</span>
-            <span>{lastTool || "—"}</span>
-            <button type="button" onClick={toggleDrawer}>
-              {drawerCollapsed ? "Open" : "Collapse"}
-            </button>
-          </div>
-          {drawerCollapsed ? null : (
-            <div className="drawer-log">
-              {agentTrace.length === 0 ? (
-                <div className="muted">No tool calls yet. Propose to fill this log.</div>
-              ) : (
-                agentTrace.map((line, index) => (
-                  <div className="drawer-line" key={`${line.ts}-${index}`}>
-                    <time>{formatTime(line.ts)}</time>
-                    <span className="tool">{line.tool}</span>
-                    <span>{line.result_summary}</span>
-                  </div>
-                ))
-              )}
-              <div ref={logEnd} />
-            </div>
           )}
-        </aside>
-      </div>
+        </div>
+        <PlannerDrawer
+          resource={trace}
+          result={proposal}
+          pending={actions.pending.propose}
+          proposalId={proposalId}
+          onPropose={propose}
+          onCancel={cancelProposal}
+        />
+      </main>
     </div>
   );
 }

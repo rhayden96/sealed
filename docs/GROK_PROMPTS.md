@@ -1,6 +1,8 @@
 # Grok Build prompts (S0–S5)
 
-Paste one prompt per session. Read `AGENTS.md` and `docs/SPEC.md` first. One milestone only. End with a 10-bullet summary appended to `docs/SESSIONS.md`.
+These S0–S5 prompts are archived scaffold history, not instructions to replay against the completed application. In particular, the early ungated target and unconditional timer verdict examples have been superseded. Current behavior and acceptance are in `docs/SPEC.md`, `docs/REMEDIATION.md` and the Remediation A–D session records.
+
+For future work, read `AGENTS.md` and `docs/SPEC.md` first, plan one milestone, preserve current invariants and finish with a 10-bullet summary in `docs/SESSIONS.md`. Do not reintroduce an earlier scaffold behavior from the archived prompts below.
 
 ---
 

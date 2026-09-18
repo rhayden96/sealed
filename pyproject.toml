@@ -1,11 +1,25 @@
-[project]
-name = "sealed"
-version = "0.1.0"
-description = "Sealed chaos control plane"
-readme = "README.md"
-requires-python = ">=3.12"
+[tool.pytest.ini_options]
+testpaths = ["apps/control/tests", "apps/target/tests", "packages/agent/tests"]
+pythonpath = ["apps/control/src", "apps/target/src", "packages/agent/src", "."]
+addopts = "--import-mode=importlib"
 
-[project.optional-dependencies]
-cli = [
-    "rich>=13.7,<15",
-]
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = [".venv", "node_modules", "dist"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+# Existing compact conditionals remain readable; formatter changes are separate.
+ignore = ["E701", "E702"]
+
+[tool.mypy]
+python_version = "3.12"
+files = ["packages/agent/src/sealed_agent/domain.py", "apps/control/src/sealed_control/clerk.py", "apps/target/src/sealed_target/metrics.py"]
+mypy_path = ["packages/agent/src", "apps/control/src", "apps/target/src"]
+check_untyped_defs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+follow_imports = "silent"

@@ -1,12 +1,7 @@
 export function IconLive() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        d="M3 12h4l2-6 4 12 2-6h6"
-      />
+      <path fill="none" stroke="currentColor" strokeWidth="1.6" d="M3 12h4l2-6 4 12 2-6h6" />
     </svg>
   );
 }
@@ -14,10 +9,46 @@ export function IconLive() {
 export function IconCatalog() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <rect x="3" y="3" width="8" height="8" rx="1" fill="none" stroke="currentColor" strokeWidth="1.6" />
-      <rect x="13" y="3" width="8" height="8" rx="1" fill="none" stroke="currentColor" strokeWidth="1.6" />
-      <rect x="3" y="13" width="8" height="8" rx="1" fill="none" stroke="currentColor" strokeWidth="1.6" />
-      <rect x="13" y="13" width="8" height="8" rx="1" fill="none" stroke="currentColor" strokeWidth="1.6" />
+      <rect
+        x="3"
+        y="3"
+        width="8"
+        height="8"
+        rx="1"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+      <rect
+        x="13"
+        y="3"
+        width="8"
+        height="8"
+        rx="1"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+      <rect
+        x="3"
+        y="13"
+        width="8"
+        height="8"
+        rx="1"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+      <rect
+        x="13"
+        y="13"
+        width="8"
+        height="8"
+        rx="1"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
     </svg>
   );
 }
@@ -33,12 +64,7 @@ export function IconRun() {
 export function IconTape() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        d="M5 6h14M5 12h14M5 18h10"
-      />
+      <path fill="none" stroke="currentColor" strokeWidth="1.6" d="M5 6h14M5 12h14M5 18h10" />
     </svg>
   );
 }
@@ -46,12 +72,7 @@ export function IconTape() {
 export function IconFixtures() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        d="M4 8h16v11H4zM4 8l2-4h12l2 4"
-      />
+      <path fill="none" stroke="currentColor" strokeWidth="1.6" d="M4 8h16v11H4zM4 8l2-4h12l2 4" />
     </svg>
   );
 }
@@ -63,7 +84,7 @@ export function IconChevron({ left }) {
         fill="none"
         stroke="currentColor"
         strokeWidth="1.8"
-        d={left ? "M14 6l-6 6 6 6" : "M10 6l6 6-6 6"}
+        d={left ? 'M14 6l-6 6 6 6' : 'M10 6l6 6-6 6'}
       />
     </svg>
   );
@@ -108,9 +129,36 @@ export function IconDatabase() {
 export function IconQueue() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <rect x="4" y="5" width="16" height="4" rx="1" fill="none" stroke="currentColor" strokeWidth="1.6" />
-      <rect x="4" y="10" width="16" height="4" rx="1" fill="none" stroke="currentColor" strokeWidth="1.6" />
-      <rect x="4" y="15" width="16" height="4" rx="1" fill="none" stroke="currentColor" strokeWidth="1.6" />
+      <rect
+        x="4"
+        y="5"
+        width="16"
+        height="4"
+        rx="1"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+      <rect
+        x="4"
+        y="10"
+        width="16"
+        height="4"
+        rx="1"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+      <rect
+        x="4"
+        y="15"
+        width="16"
+        height="4"
+        rx="1"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
     </svg>
   );
 }
@@ -133,15 +181,24 @@ export const FAULT_ICONS = {
 export function IconGameDay() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <rect x="4" y="5" width="16" height="15" rx="1" fill="none" stroke="currentColor" strokeWidth="1.6" />
+      <rect
+        x="4"
+        y="5"
+        width="16"
+        height="15"
+        rx="1"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
       <path fill="none" stroke="currentColor" strokeWidth="1.6" d="M8 3v4M16 3v4M4 10h16" />
     </svg>
   );
 }
 
 export const NAV = [
-  { id: "ops", label: "Console", Icon: IconLive },
-  { id: "gameday", label: "Game day", Icon: IconGameDay },
-  { id: "tape", label: "Tape", Icon: IconTape },
-  { id: "fixtures", label: "Fixtures", Icon: IconFixtures },
+  { id: 'ops', label: 'Console', Icon: IconLive },
+  { id: 'gameday', label: 'Game day', Icon: IconGameDay },
+  { id: 'tape', label: 'Tape', Icon: IconTape },
+  { id: 'fixtures', label: 'Fixtures', Icon: IconFixtures },
 ];

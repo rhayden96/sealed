@@ -1,0 +1,5 @@
+{
+  "name": "sealed-browser-contract",
+  "private": true,
+  "type": "module"
+}

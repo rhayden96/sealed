@@ -3,14 +3,23 @@
 from __future__ import annotations
 
 import time
-from typing import Any
+import math
+from typing import Any, TypedDict
 
 from sealed_control.loader import experiments_by_id
 
-STEP_DONE = frozenset({"resealed", "completed"})
+STEP_DONE = frozenset({"resealed", "completed", "cancelled"})
+
+
+class PolicyDecision(TypedDict):
+    allowed: bool
+    reasons: list[str]
+    auto: bool
 
 
 def current_step_index(game_day: dict[str, Any], store: Any) -> int | None:
+    if game_day.get("status") == "ended":
+        return None
     for index, step in enumerate(game_day.get("steps") or []):
         draft = store.get_draft(step["draft_id"])
         if not draft or draft.get("status") not in STEP_DONE:
@@ -23,6 +32,8 @@ def skip_reason(draft: dict[str, Any], store: Any) -> str | None:
         ids = [step["draft_id"] for step in game_day.get("steps") or []]
         if draft.get("id") not in ids:
             continue
+        if game_day.get("status") == "ended":
+            return "game_day_ended"
         index = ids.index(draft["id"])
         current = current_step_index(game_day, store)
         if current is not None and index != current:
@@ -31,11 +42,10 @@ def skip_reason(draft: dict[str, Any], store: Any) -> str | None:
 
 
 def unsealed_count(drafts: list[dict[str, Any]], now: float | None = None) -> int:
-    now = time.time() if now is None else now
     return sum(
         1
         for d in drafts
-        if d.get("status") == "unsealed" and d.get("unsealed_until", 0) > now
+        if d.get("status") in {"reserved", "injecting", "unsealed", "cleanup_pending", "recovering"}
     )
 
 
@@ -58,7 +68,7 @@ def evaluate(
     drafts: list[dict[str, Any]],
     *,
     now: float | None = None,
-) -> dict[str, Any]:
+) -> PolicyDecision:
     now = time.time() if now is None else now
     reasons: list[str] = []
     experiments = experiments_by_id(catalog)
@@ -75,6 +85,8 @@ def evaluate(
     max_duration = float(policy.get("max_duration_s", 20))
     if duration > max_duration:
         reasons.append("duration_exceeded")
+    if not math.isfinite(duration) or duration <= 0:
+        reasons.append("invalid_duration")
 
     catalog_id = draft.get("catalog_id")
     if policy.get("catalog_id_required", True) and not catalog_id:
@@ -100,3 +112,17 @@ def evaluate(
         reasons.append("not_approved")
 
     return {"allowed": len(reasons) == 0, "reasons": reasons, "auto": auto}
+
+
+def evaluate_run(
+    draft: dict[str, Any], policy: dict[str, Any], catalog: dict[str, Any], store: Any
+) -> PolicyDecision:
+    """Read-only admission preview shared by the UI and actual reservation."""
+    decision = evaluate(draft, policy, catalog, store.list_active())
+    if draft["status"] not in {"draft", "approved"}:
+        decision["reasons"].insert(0, "run_not_startable")
+    skipped = skip_reason(draft, store)
+    if skipped:
+        decision["reasons"].append(skipped)
+    decision["allowed"] = not decision["reasons"]
+    return decision

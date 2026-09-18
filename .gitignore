@@ -5,6 +5,10 @@ __pycache__/
 *.egg-info/
 .env
 .env.local
+.env.local-*
+.mypy_cache/
+.ruff_cache/
 .grok/
 .pytest_cache/
 *.zip
+apps/web/public/replay/

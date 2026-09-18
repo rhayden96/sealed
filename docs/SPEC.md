@@ -1,151 +1,103 @@
-# Sealed — spec
+﻿# Sealed shipping specification
 
 Nothing injects until policy unseals it.
 
-## Product
+## Authority and scope
 
-Sealed is a chaos **control plane** in front of a tiny demo app. Operators (and a planner agent) propose **drafts**. A **clerk** evaluates **policy**. Only then is a draft **unsealed** and allowed to inject. **Reseal** aborts. A **seal** is the immutable record of the run.
+Sealed is a local chaos control plane for one Compose demo. A draft is a proposal; approval is a recorded human input; the clerk alone authorizes unseal. Reseal requests stop fault effects and holds ownership until cleanup is confirmed. A seal is the immutable terminal record with verdict `pass`, `fail` or `aborted`.
 
-Interview shape: show that chaos is gated, prod is denied, abort works, and the agent cannot execute.
+The closed catalog contains exactly `redis_down`, `handler_latency` and `worker_drop`. Fault targets are only `api`, `redis` and `worker` inside Compose. No Kubernetes, external fault host, cloud fault API or production deployment exists. Prod is a denial example, never an injectable environment.
 
-## Vocabulary
-
-| Term | Meaning |
-|------|---------|
-| draft | Proposed experiment. Not injectable. |
-| unseal | Policy allowed this draft to inject. |
-| reseal | Abort / stop. Injection ends. |
-| seal | Immutable run record. |
-| clerk | Control-plane policy evaluator. The only unseal authority. |
-| catalog | Closed list of three experiments. |
-| policy | Rules in `experiments/policy.yaml`. |
-
-## Topology (Compose only)
-
-```
-web:5173  →  control:8081  →  target:8080
-                              ├─ Redis
-                              └─ worker
-         toxiproxy (optional) on Compose network only
+```text
+web:5173 /api -> control:8081 -> signed run authorization -> target:8080
+         /target ---------------------------------------> public probes
+ target-web:5174 /api -----------------------------------> public probes
+ target:8080 <-> redis:6379 <-> worker
+ control:8081 <-> control-data (SQLite, independent of Redis)
 ```
 
-No Kubernetes. No hosts outside Compose. Prod is not a deployable environment.
+All published ports bind to `127.0.0.1`. The supported process model is one control process/replica, one target process and one worker. Uvicorn workers are fixed at one; advisory locks enforce API ownership; SQLite uniqueness also prevents multiple active run records. Local operators are trusted. This is not a multi-user authentication system or a sandboxed agent process.
 
-## Target (`apps/target`, port 8080)
+Optional inference is a **planner-only network exception**: an operator explicitly selects Ollama via `host.docker.internal` or xAI and enables `ALLOW_PLANNER_NETWORK=true`. These destinations never enter the fault-target allowlist. Stub mode is authoritative and requires no inference network. The product planner cannot unseal, reseal, inject, execute, invoke a shell, use Docker or issue arbitrary network requests.
 
-| method | path | contract |
-|--------|------|----------|
-| `POST` | `/login` | Session via Redis. **Fail closed** if Redis is down (no login, no stale session). |
-| `POST` | `/jobs` | Enqueue work for the worker. |
-| `GET` | `/health` | Liveness of api / redis / worker as known to the target. |
-| `GET` | `/metrics` | JSON: `p95_ms`, `error_rate`, `inflight`. |
-| `POST` | `/_faults` | Apply an **unsealed** catalog fault. Reject if not unsealed. |
+## Catalog and policy contracts
 
-`/_faults` accepts only catalog ids: `redis_down`, `handler_latency`, `worker_drop`.
+The source of truth is `experiments/catalog.yaml` and `experiments/policy.yaml`, validated on startup. Unknown/duplicate catalog entries and contradictory configuration fail startup.
 
-Fault delivery:
+Admission requires demo, a compatible allowlisted target, a known catalog ID, positive finite duration at most 20 seconds, and no owner in reservation, injection, unsealed, cleanup or recovery. Only demo `handler_latency` at at most five seconds is auto-unseal eligible. All other admitted drafts require recorded approval. Manual draft creation explicitly auto-unseals eligible latency; planner proposals and game-day creation only save drafts.
 
-- `handler_latency` — in-process delay on the API handler (`delay_ms`)
-- `worker_drop` — in-process drop on the worker (`drop_rate`)
-- `redis_down` — toxiproxy (or equivalent in-process cut) against Compose Redis, not an external host
+The draft API retains well-formed non-demo and over-limit durations so operators can inspect policy denial. Malformed numbers, zero/negative duration, booleans in numeric fields, unexpected keys, incompatible targets and missing required assertions are rejected. Target privileged requests independently enforce the injectable bounds. Handler delay is bounded to 0–1000 ms; worker drop rate is 0–1. SLO p95 is finite within 0–60000 ms and HTTP error rate within 0–1. Custom hypotheses cannot remove the catalog's required assertion. Request bodies are bounded to 64 KiB.
 
-## Control (`apps/control`, port 8081)
+## Lifecycle and recovery
 
-- Serves catalog and policy as loaded from `experiments/`
-- CRUD-ish drafts: create/list/get
-- `POST .../approve` sets `approved: true` (still not injectable until clerk unseals)
-- Clerk **unseal** / **reseal**
-- Writes **seals** when a run ends
-- Fixture replay endpoint namespace: `/fixtures`
-
-Control never injects. It authorizes. Target injects only with a current unsealed run.
-
-## Policy v0
-
-Loaded from `experiments/policy.yaml`. All must hold to unseal:
-
-1. `environment == demo`
-2. `target` ∈ `{api, redis, worker}`
-3. `duration_s <= 20`
-4. Catalog `id` is required and exists in `experiments/catalog.yaml`
-5. At most **one** unsealed run (`max_concurrent_unsealed: 1`)
-
-**Auto-unseal:** only `handler_latency` with `duration_s <= 5` and `environment == demo`.
-
-**Else:** `approved: true` is required after clerk evaluation.
-
-**Deny:** `environment == prod` (and any environment not `demo`).
-
-The clerk is the only unseal authority. UI approval is an input to policy, not a bypass.
-
-## Hypothesis
-
-Every draft carries a hypothesis object (JSON):
-
-```json
-{
-  "slo": {
-    "p95_ms": 500,
-    "error_rate": 0.05
-  },
-  "must": [
-    "fail_closed_on_redis_loss"
-  ]
-}
+```text
+draft -> approved -> reserved -> injecting -> unsealed -> cleanup_pending
+  |              (eligible drafts may reserve directly by policy)   |
+  +-> cancelled (unused game-day draft)                    recovering
+                                                                |
+                                               completed or resealed
+                                                                |
+                                                       one immutable seal
 ```
 
-- `slo` — numeric bounds checked against `GET /metrics` (and recovery after reseal).
-- `must` — named assertions that must hold (e.g. fail-closed login). Catalog entries pin the default `must` ids.
+Reservation and clerk evaluation happen atomically before target I/O. Same-run retries cannot start again; competing runs cannot pass admission. Terminal IDs are never replayable. Create another draft to rerun an experiment. Approval is idempotent while the run is startable. Duplicate aborts return the existing terminal outcome rather than writing another seal.
 
-Catalog defaults:
+Control signs a run-scoped authorization with a generated server credential on `sealed-auth`; target checks identity, bounded expiry and HMAC. Identical duplicate delivery acknowledges the same deadline. Short-lived Redis receipts reject replay; status acknowledgements include run and target boot identity. Timed-out injection is reconciled, never blindly reinjected. Conditional cleanup for an older run cannot clear a newer run. Browser proxies strip privileged headers and reject private target routes.
 
-| id | hypothesis `must` (primary) |
-|----|-----------------------------|
-| `redis_down` | `fail_closed_on_redis_loss` |
-| `handler_latency` | `latency_recovers_after_reseal` |
-| `worker_drop` | `dropped_jobs_do_not_corrupt_queue` |
+The lifecycle owns a background scheduler; GETs do not drive completion. Target expiry is a bounded backstop. Cleanup failure holds admission and is retried with bounded backoff. Abort interrupts injected handler waits. The worker reads fault state at its processing decision; a decision already made before abort may still finish committing afterward. UI distinguishes requested cleanup, confirmed cleanup and measured recovery.
 
-## Verdict
+SQLite stores versioned drafts/game days, immutable event rows, immutable seals and configuration snapshots/hashes on `control-data`. Copies at repository boundaries prevent alias mutation. Unique constraints and transactions enforce one owner, one seal per run and atomic finalization. Startup cleans interrupted runs and fails them conservatively with a recovery reason; it does not resume injection. Target boot identity changes fail a run even after its last during-fault observation. Audit durability is independent of Redis.
 
-A seal’s verdict is exactly one of:
+This is persistent schema version 1; there is no migration for lost pre-remediation in-memory history. Existing legacy fixtures remain separate. Stop control before making a database backup. Keep named volumes during normal restarts/upgrades. Unknown future schema versions fail explicitly rather than overwriting history.
 
-| verdict | when |
-|---------|------|
-| `pass` | Hypothesis `slo` + `must` held |
-| `fail` | Injection completed; hypothesis did not hold |
-| `aborted` | Operator (or timeout/policy) **resealed** before completion |
+## Evidence and verdicts
 
-Seals are immutable. No updates after write. Replay from `fixtures/seals/`.
+The control service creates bounded business workload inside Compose: three baseline cycles, at most 24 during cycles, and three recovery cycles. Worker cycles contain three uniquely correlated jobs, at most 90 jobs across a run. Requests and job polling have deadlines. Observations record actual times, latency, HTTP status, correlation and results; session secrets are excluded. Late samples are not started when their bounded completion could extend beyond the injection deadline.
 
-## Agent (`packages/agent`)
+A passing simple run requires at least 3 baseline, 1 during and 3 recovery valid samples; worker runs require at least 9, 3 and 9 terminal job samples. Acknowledged effective duration must match the requested duration. Simulated, absent, malformed, incomplete or missing-recovery evidence cannot pass. Infrastructure errors remain explicit even if earlier samples looked good.
 
-Planner only. Proposes drafts from the catalog. Does not run them.
+Checks evaluate each configured SLO and required assertion against recorded observations:
 
-**Allowed tools**
+- `latency_recovers_after_reseal`: measurable latency increase during the handler fault, bounded by the configured SLO, followed by measured recovery.
+- `fail_closed_on_redis_loss`: real 503 fail-closed session probes with no session credentials while faulted, and successful baseline/recovery probes. The Redis catalog permits the intentional during-fault HTTP error rate.
+- `dropped_jobs_do_not_corrupt_queue`: uniquely correlated terminal jobs preserve exact payloads; intentional drops match the run; nonzero configured drop rate must produce observed drops; baseline/recovery jobs complete. HTTP error rate and job drop rate are separate measurements.
 
-- read catalog / policy / seals
-- propose draft (hypothesis + catalog id + target + duration)
-- explain why policy would allow or deny
+`pass` means all measured assertions, SLOs, authorization completeness and recovery checks succeeded. `fail` covers hypothesis, missing evidence and infrastructure failure with separate reasons. Explicit operator interruption is `aborted`, with available evidence and cleanup outcome retained. Natural expiry is never sufficient for pass.
 
-**Forbidden tools**
+The target's live metrics cover business `/probe`, `/login` and `/jobs` traffic only, using a consistent 60-second/200-sample window with per-route/run attribution. No samples is null, never a fabricated zero. Dashboard health/management requests do not dilute experiment measurements. Seal evidence is evaluated from the controlled workload, independently of dashboard polling frequency.
 
-- `execute`
-- `unseal`
-- `shell`
+## Target and worker API
 
-The product agent must not inject, unseal, or run host commands. Policy/clerk unseals. Humans approve non-auto drafts.
+| Method/path | Behavior |
+|---|---|
+| `GET /health` | Observed API, Redis and worker states with timestamp/heartbeat age; 200 may be degraded |
+| `GET /ready` | 200 only when dependencies are observed healthy, otherwise 503 |
+| `GET /probe` | Non-mutating handler workload; latency faults apply |
+| `POST /login` | Synthetic Redis session probe; failure is closed, never production authentication |
+| `POST /jobs` | Atomic bounded enqueue; returns 202 and job identity |
+| `GET /jobs?limit=&offset=` | Bounded retained history using batched reads; includes next offset |
+| `GET /jobs/{id}` | Individual queued/processing/done/dropped/failed outcome |
+| `GET/POST /_faults`, `DELETE /_faults/{run_id}` | Private authenticated run status, signed injection, conditional cleanup |
 
-## Interview demos (four)
+Worker readiness uses heartbeat freshness, not a constant green status. Temporary Redis failures use bounded backoff. Atomic Redis scripts enqueue, claim with a lease/token, and acknowledge. Interrupted claims have at most three attempts; intentional drops are terminal and are not retried. Queue capacity is 200, history is bounded to 1000 entries, job payloads to 8192 encoded bytes and terminal retention to 3600 seconds. Expired history entries are skipped coherently. Malformed historical job data produces an explicit read failure instead of a fabricated empty history.
 
-1. **Happy latency** — draft `handler_latency` (5s, 300ms delay) in `demo`. Auto-unseals. Probes show p95 rise; reseal/end recovers. Verdict `pass` if SLO/`must` hold.
-2. **Deny prod** — same or any catalog id with `environment: prod`. Clerk denies. Nothing injects.
-3. **Abort `redis_down`** — approved demo draft, unseal, `/login` fail-closed, operator abort **reseals**, verdict `aborted`.
-4. **Agent proposes `worker_drop` and does not run** — planner emits a draft only. No execute, no unseal, no shell. Injection happens only if a human approves and the clerk unseals (out of band for this demo).
+## Control and operator API
 
-## Non-goals
+- `/catalog`, `/policy`, `/health` expose configuration and control liveness.
+- `/drafts` creates or lists bounded/searchable run summaries; `/drafts/{id}` returns the full run.
+- `/drafts/{id}/approve`, `/unseal`, `/reseal` capture lifecycle operations for that exact identity.
+- `GET /drafts/{id}/evaluate` is read-only policy preview; terminal runs are denied. The compatible POST preview also remains non-mutating.
+- `/active-run` exposes current ownership; `/drafts/{id}/events` gives deterministic sequence pagination; `/drafts/{id}/seal` gives that run's terminal record.
+- `/seals` lists bounded summaries; `/seals/{id}` returns immutable detail.
+- `/game-days` creates all validated steps transactionally and lists resumable days. `/game-days/{id}/abort` aborts the active step. `/end` ends the day and cancels unused drafts without manufacturing seals for unexecuted work.
+- `/agent/propose` accepts a bounded idempotency key and permits one proposal at a time. Planning is asynchronous with a 15-second overall deadline, bounded rounds/tools/output and no provider retries. Cancellation is scoped by proposal ID. Partial failure preserves at most one saved draft and reports actual provenance.
+- `/agent/trace` contains bounded, sanitized planner diagnostics, distinct from immutable run events. Actual secret values and credential-bearing summaries are redacted.
+- `/fixtures` remains a control API compatibility path. The web uses bundled `/replay/seals/` assets so replay does not require control or live dependencies.
 
-- Kubernetes, mesh, or multi-cluster
-- Hosts or faults outside Compose
-- A fourth catalog fault
-- Production as an environment
-- Agent-driven unseal or execution
+The console separates its composer from selected run state, keeps scoped abort globally reachable, uses actual events/evidence and recovers selection from the URL/server. Per-action deduplication does not block abort behind planning. Polls are cancellable, non-overlapping and reject stale results. Missing or failed observations show loading, unknown, unavailable or stale states with last success; they cannot become healthy by default. Fixture contents are historical/synthetic and legacy absence of measured evidence is explicit.
+
+## Packaging and verification
+
+Default Compose web images contain built Vite assets, served by a non-root Node server with same-origin proxies, payload limits, absolute upstream deadlines and graceful shutdown. `/healthz` checks each web server alone. The optional `docker-compose.dev.yml` uses Vite hot reload inside Compose. `TARGET_APP_URL` affects only the local display link, with a localhost:5174 fallback.
+
+Base-image digests, Python resolution and JS lockfiles are pinned. The default stub walkthrough and replay have no provider dependency. Initial builds/downloads are separate from offline operation. See `QUALITY.md` for executable gates, `WALKTHROUGH.md` for operator steps and `REMEDIATION.md` for finding-by-finding acceptance evidence.

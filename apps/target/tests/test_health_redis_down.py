@@ -1,10 +1,5 @@
-import os
-
 from fastapi.testclient import TestClient
-
-
-def _token_header() -> dict[str, str]:
-    return {"X-Sealed-Token": os.environ["UNSEAL_TOKEN"]}
+from .conftest import authorization, fault_body
 
 
 def test_faults_ungated_is_forbidden(client: TestClient) -> None:
@@ -19,9 +14,8 @@ def test_health_degrades_on_redis_down(client: TestClient) -> None:
     assert body["status"] == "ok"
     assert body["redis"] == "ok"
 
-    injected = client.post(
-        "/_faults", json={"id": "redis_down"}, headers=_token_header()
-    )
+    payload = fault_body()
+    injected = client.post("/_faults", json=payload, headers=authorization(payload))
     assert injected.status_code == 200
     assert injected.json()["id"] == "redis_down"
 

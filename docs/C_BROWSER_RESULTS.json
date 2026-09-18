@@ -1,0 +1,77 @@
+[
+  {
+    "check": "target handler action is non-mutating GET /probe",
+    "result": "pass",
+    "calls": [
+      {
+        "method": "GET",
+        "path": "/api/probe"
+      }
+    ]
+  },
+  {
+    "check": "rapid repeated enqueue is deduplicated while its response is pending",
+    "result": "pass",
+    "requests": 1
+  },
+  {
+    "check": "explicit auto-unseal and selected run survive composer switching",
+    "result": "pass",
+    "run_id": "d-2b9b92a8e62698c8458cb337b70e6c68"
+  },
+  {
+    "check": "approval after composer switching affects the selected Redis run",
+    "result": "pass",
+    "run_id": "d-bc8fb701a84f167591ee7d927abed195",
+    "mutations": [
+      "/api/drafts/d-bc8fb701a84f167591ee7d927abed195/approve",
+      "/api/drafts/d-bc8fb701a84f167591ee7d927abed195/unseal"
+    ]
+  },
+  {
+    "check": "target Redis outage retains last-known jobs and shows fail-closed login",
+    "result": "pass",
+    "retained_job": "862e1d84-3a85-4252-b802-77b4992ff865"
+  },
+  {
+    "check": "global scoped abort works after navigation/refresh while planning is pending",
+    "result": "pass",
+    "run_id": "d-bc8fb701a84f167591ee7d927abed195",
+    "response_ms": 86,
+    "planner_request": "intercepted pending"
+  },
+  {
+    "check": "failed live health request keeps labeled last-known values instead of green current status",
+    "result": "pass"
+  },
+  {
+    "check": "malformed HTTP 200 health response cannot replace valid observations",
+    "result": "pass"
+  },
+  {
+    "check": "prod denial example exposes clerk reasons without injecting",
+    "result": "pass",
+    "run_id": "d-08436eee230d814263ad804ef5b6c88b"
+  },
+  {
+    "check": "historical evidence is associated with selected run, not latest global seal",
+    "result": "pass",
+    "run_id": "d-2b9b92a8e62698c8458cb337b70e6c68"
+  },
+  {
+    "check": "both frontends have no unhandled browser errors",
+    "result": "pass"
+  },
+  {
+    "check": "older jobs response cannot overwrite cached observations after mutation refresh",
+    "result": "pass",
+    "requests": "intercepted GET/POST fixtures",
+    "retained": "retained-first-job"
+  },
+  {
+    "check": "offline fixture detail renders without live services or mutations",
+    "result": "pass",
+    "mutations": 0,
+    "page_errors": 0
+  }
+]

@@ -6,6 +6,7 @@
   --accent: #7cb4ff;
   --ok: #6ee7a8;
   --bad: #f07178;
+  --warning: #e5bf75;
 }
 
 * {
@@ -14,7 +15,7 @@
 
 body {
   margin: 0;
-  font-family: "Segoe UI", system-ui, sans-serif;
+  font-family: 'Segoe UI', system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
@@ -33,6 +34,7 @@ header {
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 header h1 {
@@ -74,6 +76,105 @@ h2 {
   background: color-mix(in srgb, var(--bad) 14%, transparent);
 }
 
+.chip.stale,
+.chip.unavailable,
+.chip.unknown {
+  color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+}
+
+.chip.loading {
+  background: #232734;
+}
+
+.chip.healthy {
+  color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 12%, transparent);
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
+}
+
+.section-heading h2 {
+  margin: 0;
+}
+
+.health-panel {
+  background: #191d26;
+  border: 1px solid #303747;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.services {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.services dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.services dd {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.service-state.ok {
+  color: var(--ok);
+}
+.service-state.down {
+  color: var(--bad);
+}
+.service-state.unknown {
+  color: var(--warning);
+}
+
+.last-known {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.section-description {
+  margin-bottom: 0.85rem;
+}
+
+.observation-age {
+  margin-top: 0.7rem;
+  font-size: 0.75rem;
+}
+
+.observation-badge {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+.observation-badge.stale,
+.observation-badge.unavailable {
+  color: var(--warning);
+}
+
 form,
 .stack {
   display: grid;
@@ -113,6 +214,27 @@ button:disabled {
   cursor: not-allowed;
 }
 
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+button.quiet-button {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid #465471;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.75rem;
+}
+
+.action-feedback:empty {
+  display: none;
+}
+.action-feedback {
+  margin-top: 0.5rem;
+}
+
 .note {
   margin: 0;
   color: var(--muted);
@@ -138,6 +260,21 @@ button:disabled {
   justify-content: space-between;
   gap: 1rem;
   font-size: 0.9rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #292e3b;
+}
+
+.job-identity {
+  min-width: 0;
+}
+.job-detail {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+.status {
+  white-space: nowrap;
 }
 
 .status.queued {
@@ -150,4 +287,61 @@ button:disabled {
 
 .status.dropped {
   color: var(--bad);
+}
+
+.status.failed {
+  color: var(--bad);
+}
+.status.processing {
+  color: var(--accent);
+}
+.status.unknown {
+  color: var(--warning);
+}
+
+@media (max-width: 400px) {
+  .page {
+    padding: 1.4rem 1rem 3rem;
+  }
+  .services {
+    gap: 0.4rem;
+  }
+  .last-known {
+    font-size: 0.66rem;
+  }
+}
+
+.page,
+section,
+form,
+label,
+.stack {
+  min-width: 0;
+}
+input {
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid #394459;
+}
+button {
+  min-height: 42px;
+}
+.jobs li {
+  flex-wrap: wrap;
+}
+.note,
+.fail,
+.job-detail,
+.last-known {
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.action-time {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.action-time time {
+  font-variant-numeric: tabular-nums;
 }

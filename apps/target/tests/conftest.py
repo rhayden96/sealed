@@ -1,22 +1,26 @@
-import os
+import hashlib
+import hmac
+import json
+import time
 from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
 
 from sealed_target.main import create_app
+from sealed_target.worker import HEARTBEAT_KEY
 
 TEST_TOKEN = "test-unseal"
 
 
 class FakeRedis:
     def __init__(self) -> None:
-        self.store: dict[str, str] = {}
+        self.store: dict[str, str] = {HEARTBEAT_KEY: json.dumps({"at": time.time(), "worker_id": "test-worker"})}
 
     async def ping(self) -> bool:
         return True
 
-    async def set(self, key: str, value: str, ex: int | None = None) -> bool:
+    async def set(self, key: str, value: str, ex: int | None = None, px: int | None = None) -> bool:
         self.store[key] = value
         return True
 
@@ -48,7 +52,15 @@ class FakeRedis:
 
 @pytest.fixture
 def client() -> Generator[TestClient, None, None]:
-    os.environ["UNSEAL_TOKEN"] = TEST_TOKEN
-    app = create_app(redis_factory=FakeRedis)
+    app = create_app(redis_factory=FakeRedis, token=TEST_TOKEN)
     with TestClient(app) as test_client:
         yield test_client
+
+
+def authorization(body: dict) -> dict[str, str]:
+    message = json.dumps(body, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    return {"X-Sealed-Token": TEST_TOKEN, "X-Sealed-Authorization": hmac.new(TEST_TOKEN.encode(), message, hashlib.sha256).hexdigest()}
+
+
+def fault_body(run_id: str = "run-a", fault_id: str = "redis_down", duration: float = 15, **overrides) -> dict:
+    return {"run_id": run_id, "id": fault_id, "duration_s": duration, "params": {}, "authorization_expires_at": time.time() + duration + 2, **overrides}

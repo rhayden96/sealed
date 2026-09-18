@@ -22,7 +22,7 @@ Policy is the only unseal authority. Humans approve; the clerk evaluates; the pr
 - React + Vite (web)
 - Docker Compose (the only runtime)
 
-Do not introduce Kubernetes, Helm, Terraform, cloud APIs, or hosts outside Compose.
+Do not introduce Kubernetes, Helm, Terraform, cloud fault APIs, or fault targets outside Compose. Optional planner inference has the narrow exception documented below.
 
 ## Layout
 
@@ -30,10 +30,14 @@ Do not introduce Kubernetes, Helm, Terraform, cloud APIs, or hosts outside Compo
 apps/target/        demo API + in-process / toxiproxy faults
 apps/control/       drafts, clerk (policy), unseal/reseal, seals
 apps/web/           approve drafts, probes, abort, trace
+apps/target-web/    synthetic session, handler and job probes
 packages/agent/     planner — proposes drafts only
+packages/web/       shared browser client and static demo server
+packages/           pinned dependency and quality configuration
 experiments/        catalog.yaml + policy.yaml
 fixtures/           offline seal replay
 docs/               SPEC, sessions, walkthrough, prompts
+.github/workflows/  CI quality gates; no runtime infrastructure
 ```
 
 Do not add new top-level directories without an explicit plan in the session and an update to this layout.
@@ -43,9 +47,9 @@ Do not add new top-level directories without an explicit plan in the session and
 1. **Product agent has no `execute`, `unseal`, or `shell` tool.** It may propose drafts and explain. It must not inject, unseal, or run host commands as part of the product.
 2. **Policy is the only unseal authority.** `experiments/policy.yaml` decides. UI/API may set `approved=true`; they do not bypass the clerk.
 3. **No Kubernetes.** Faults are in-process on the target or toxiproxy against Compose services.
-4. **No hosts outside Compose.** Target, Redis, worker, toxiproxy, control, web — that is the universe.
+4. **No fault hosts outside Compose.** Target, Redis, worker, control and the two web apps are the runtime. Optional toxiproxy must remain inside Compose. An operator may explicitly enable a planner-only Ollama or xAI provider using `PLANNER` plus `ALLOW_PLANNER_NETWORK=true`; this grants no fault tool, target, credential or execution authority. Stub is the default and offline walkthrough mode.
 5. **Prod is forbidden.** Environment must be `demo`. Any `prod` draft is denied.
-6. **Demo works offline** via `/fixtures`. No live cluster, no internet dependency for the walkthrough.
+6. **Demo works offline** via console `/?view=fixtures` and its bundled replay assets. `/fixtures` remains a control API compatibility path. No live cluster or internet dependency for the cached stub walkthrough.
 7. **Only three faults:** `redis_down`, `handler_latency`, `worker_drop`. No fourth catalog id.
 
 ## Fault catalog (closed)
@@ -98,10 +102,15 @@ Until those exist, this repo is **harness only**.
 7. Do not add extra catalog faults, extra environments, or UUID-named directories.
 8. Keep secrets out of git (`.env` is gitignored). Demo config is files in `experiments/` and `fixtures/`.
 
-## Ports (Compose placeholders)
+## Ports (loopback-only Compose bindings)
 
 | service | port |
 |---------|------|
 | target  | 8080 |
 | control | 8081 |
 | web     | 5173 |
+| target-web | 5174 |
+
+## Supported runtime ownership
+
+One target API process and one control process/replica are supported. Keep Uvicorn workers at one, the advisory ownership locks, SQLite active-run uniqueness and the scoped target authorization checks. SQLite on `control-data` is independent of the faulted Redis service. Admission stays owned through reservation, injection, cleanup and recovery. On restart, clean up interrupted runs and record failure; never re-inject automatically. Local demo ports are unauthenticated operator access, not a multi-user authorization system. The planner tool allowlist is an application boundary, not process isolation.

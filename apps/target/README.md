@@ -1,25 +1,7 @@
-# Target (S1/S2)
+﻿# Target API and worker
 
-Demo API. Python 3.12 + FastAPI. Compose port **8080**.
+Python 3.12/FastAPI inside Compose. Public business operations are GET /probe, POST /login and POST /jobs; job list/detail, health/readiness and bounded metrics are available separately. The session operation is a synthetic Redis probe.
 
-- `POST /login` — Redis session; fail closed if Redis is cut or unreachable
-- `POST /jobs` — enqueue for the worker
-- `GET /health` — `{status, api, redis, worker}`; any `down` ⇒ `degraded`
-- `GET /metrics` — `{p95_ms, error_rate, inflight}`
-- `POST /_faults` — `redis_down` | `handler_latency` | `worker_drop`
-- `DELETE /_faults` — clear (reseal)
+Only signed, bounded, run-scoped control authorizations may activate the three catalog faults. Private /_faults routes are excluded from browser proxies. Handler waits are cancellable; worker decisions use current fault state. Atomic enqueue/claim/ack scripts preserve intentional drops and recover interrupted leases with bounded retries and retention.
 
-Faults are **in-process**. `POST`/`DELETE /_faults` require header `X-Sealed-Token` matching `UNSEAL_TOKEN`. Control is the only caller. Ungated inject is **403**.
-
-## Pytest
-
-```
-cd apps/target
-python -m venv .venv
-.venv\Scripts\pip install -e ".[dev]"
-.venv\Scripts\pytest tests/test_health_redis_down.py
-```
-
-## Compose
-
-From repo root: `docker compose up --build`.
+See [SPEC](../../docs/SPEC.md) for bounds and semantics and [QUALITY](../../docs/QUALITY.md) for tests. The Compose target health check uses /ready; a 200 /health response can describe intentional degradation. Redis job state is disposable demo data; immutable run history lives in control's independent SQLite volume.

@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
-"""Interactive Sealed launcher. Writes .env.local then docker compose up --build."""
+"""Local Compose launcher with explicit, authoritative planner selection."""
 
 from __future__ import annotations
 
 import getpass
+import argparse
+import json
 import os
 import platform
 import shutil
 import subprocess
 import sys
+import re
+import tempfile
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -18,6 +22,7 @@ ENV_FILE = ROOT / ".env.local"
 OLLAMA_HOST = "http://127.0.0.1:11434"
 COMPOSE_BASE = "http://host.docker.internal:11434/v1"
 GIB = 1024**3
+PROVIDER_KEYS = ("LLM_BASE_URL", "LLM_MODEL", "LLM_API_KEY", "XAI_API_KEY", "OPENAI_API_KEY", "OPENAI_BASE_URL", "OPENAI_MODEL")
 
 INSTALL = {
     "Windows": "https://ollama.com/download/windows",
@@ -169,17 +174,37 @@ def has_model(models: list[str], want: str) -> bool:
     return False
 
 
-def write_env(lines: list[str]) -> None:
-    ENV_FILE.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
-    if os.name != "nt":
-        try:
-            os.chmod(ENV_FILE, 0o600)
-        except OSError:
-            pass
+def dotenv_value(value: str) -> str:
+    if any(character in value for character in ("\n", "\r", "\0")):
+        raise ValueError("Configuration values must be a single line without NUL characters.")
+    # Compose expands double-quoted escapes and recognizes \$ as a literal
+    # dollar. JSON escaping also preserves trailing backslashes and quotes.
+    return json.dumps(value, ensure_ascii=False).replace("$", "\\$")
+
+
+def write_env(values: dict[str, str]) -> None:
+    lines = []
+    for key, value in values.items():
+        if not re.fullmatch(r"[A-Z][A-Z0-9_]*", key):
+            raise ValueError("Invalid configuration key.")
+        lines.append(f"{key}={dotenv_value(value)}")
+    content = "\n".join(lines) + "\n"
+    descriptor, temporary = tempfile.mkstemp(prefix=".env.local-", dir=ENV_FILE.parent)
+    try:
+        if os.name != "nt":
+            os.fchmod(descriptor, 0o600)
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, ENV_FILE)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
     say(f"Wrote {ENV_FILE.name}")
 
 
-def run_compose() -> int:
+def run_compose(config: dict[str, str]) -> int:
     cmd = [
         "docker",
         "compose",
@@ -190,13 +215,10 @@ def run_compose() -> int:
     ]
     say(" ".join(cmd))
     env = os.environ.copy()
-    if ENV_FILE.is_file():
-        for raw in ENV_FILE.read_text(encoding="utf-8").splitlines():
-            line = raw.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, value = line.split("=", 1)
-            env[key] = value
+    for key in PROVIDER_KEYS:
+        env.pop(key, None)
+    # Explicit values override shell precedence as well as the dotenv file.
+    env.update(config)
     try:
         return subprocess.call(cmd, cwd=str(ROOT), env=env)
     except KeyboardInterrupt:
@@ -206,21 +228,32 @@ def run_compose() -> int:
         return 1
 
 
+def planner_config(mode: str, **values: str) -> dict[str, str]:
+    return {"PLANNER": mode, "ALLOW_PLANNER_NETWORK": "false" if mode == "stub" else "true", **{key: "" for key in PROVIDER_KEYS}, **values}
+
+
+def launch(config: dict[str, str]) -> int:
+    write_env(config)
+    return run_compose(config)
+
+
 def path_stub() -> int:
-    write_env(["PLANNER=stub"])
-    return run_compose()
+    return launch(planner_config("stub"))
 
 
-def path_xai() -> int:
-    key = ask("xAI API key", password=True).strip()
+def path_xai(*, interactive: bool = False, model: str | None = None) -> int:
+    key = os.environ.get("XAI_API_KEY", "")
+    dotenv_value(key)
+    key = key.strip()
+    if not key and interactive:
+        key = ask("xAI API key", password=True).strip()
     if not key:
-        say("No key entered. Using stub.")
-        return path_stub()
-    write_env([f"XAI_API_KEY={key}"])
-    return run_compose()
+        say("XAI_API_KEY is required for --xai. Set it in the environment or choose --stub.")
+        return 2
+    return launch(planner_config("xai", XAI_API_KEY=key, LLM_MODEL=model or "grok-4.5"))
 
 
-def path_llama() -> int:
+def path_llama(*, interactive: bool = False, model: str | None = None) -> int:
     system = platform.system()
     kind = arch()
     ram = ram_bytes()
@@ -229,13 +262,13 @@ def path_llama() -> int:
 
     if not arch_ok(kind):
         say(f"Arch {kind} is unsupported for this launcher.")
-        if confirm("Continue with stub planner?", default=True):
+        if interactive and confirm("Continue with stub planner?", default=True):
             return path_stub()
         return 1
 
     if ram is not None and ram < 8 * GIB:
         say(f"Need at least 8 GiB RAM for local Llama (saw {ram_gib:.1f} GiB).")
-        if confirm("Continue with stub planner?", default=True):
+        if interactive and confirm("Continue with stub planner?", default=True):
             return path_stub()
         return 1
 
@@ -250,7 +283,7 @@ def path_llama() -> int:
             say("Start it with: ollama serve")
         say(f"Install: {link}")
         say("This launcher does not download Ollama.")
-        if confirm("Continue with stub planner?", default=True):
+        if interactive and confirm("Continue with stub planner?", default=True):
             return path_stub()
         return 1
 
@@ -262,48 +295,58 @@ def path_llama() -> int:
 
     recommend = "llama3.2" if ram is None or ram < 16 * GIB else "llama3.1"
     say(f"Recommend: {recommend}")
-    model = ask("Model", default=recommend).strip() or recommend
+    if not model:
+        model = ask("Model", default=recommend).strip() if interactive else "llama3.2"
+        model = model or recommend
 
     if not has_model(models, model):
-        if confirm(f"Run ollama pull {model}?", default=True):
+        if interactive and confirm(f"Run ollama pull {model}?", default=False):
             code = subprocess.call([binary, "pull", model])
             if code != 0:
                 say("pull failed. Using stub.")
                 return path_stub()
         else:
-            say("No pull. Using stub.")
-            return path_stub()
+            say(f"Model is not installed. Install the selected model with Ollama, then retry --llama --model {model}, or use --stub.")
+            return 2
 
-    write_env(
-        [
-            f"LLM_BASE_URL={COMPOSE_BASE}",
-            f"LLM_MODEL={model}",
-            "LLM_API_KEY=ollama",
-        ]
-    )
-    return run_compose()
+    return launch(planner_config("llama", LLM_BASE_URL=COMPOSE_BASE, LLM_MODEL=model, LLM_API_KEY="ollama"))
 
 
 def menu() -> str:
     panel(
         "1  stub planner (demo, no LLM)\n"
         "2  llama (Ollama on this machine)\n"
-        "3  xai (SpaceXAI API key)",
+        "3  xai (optional planner-only API access)",
         title="How should the planner run?",
     )
     choice = ask("Choice", default="1").strip()
     return choice
 
 
-def main() -> int:
-    os.chdir(ROOT)
-    choice = menu()
-    if choice in {"1", "stub"}:
-        return path_stub()
-    if choice in {"2", "llama"}:
-        return path_llama()
-    if choice in {"3", "xai"}:
-        return path_xai()
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Start the local Sealed Compose demo. Stub mode works without a model provider.")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--stub", dest="mode", action="store_const", const="stub", help="Use the offline deterministic planner; ignore inherited provider settings.")
+    mode.add_argument("--llama", dest="mode", action="store_const", const="llama", help="Use an installed Ollama model through the explicit planner-only host exception.")
+    mode.add_argument("--xai", dest="mode", action="store_const", const="xai", help="Use optional xAI planning; requires XAI_API_KEY in the environment.")
+    parser.add_argument("--model", help="Installed Ollama model or xAI model name; never an injection target.")
+    args = parser.parse_args(argv)
+    if args.model and not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}", args.model):
+        parser.error("--model must be a valid model name (up to 128 characters).")
+    if args.model and args.mode not in {"llama", "xai"}:
+        parser.error("--model requires --llama or --xai.")
+    interactive = args.mode is None and sys.stdin.isatty()
+    choice = args.mode or (menu() if interactive else "stub")
+    try:
+        if choice in {"1", "stub"}:
+            return path_stub()
+        if choice in {"2", "llama"}:
+            return path_llama(interactive=interactive, model=args.model)
+        if choice in {"3", "xai"}:
+            return path_xai(interactive=interactive, model=args.model)
+    except ValueError as exc:
+        say(str(exc))
+        return 2
     say("Unknown choice.")
     return 1
 

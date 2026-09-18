@@ -1,0 +1,2776 @@
+[
+  {
+    "check": "console 360px: no document horizontal overflow",
+    "result": "pass",
+    "viewport": 360,
+    "document": 360,
+    "body": 360
+  },
+  {
+    "check": "target 360px: no document horizontal overflow",
+    "result": "pass",
+    "viewport": 360,
+    "document": 360,
+    "body": 360
+  },
+  {
+    "check": "console 390px: no document horizontal overflow",
+    "result": "pass",
+    "viewport": 390,
+    "document": 390,
+    "body": 390
+  },
+  {
+    "check": "target 390px: no document horizontal overflow",
+    "result": "pass",
+    "viewport": 390,
+    "document": 390,
+    "body": 390
+  },
+  {
+    "check": "console 768px: no document horizontal overflow",
+    "result": "pass",
+    "viewport": 768,
+    "document": 768,
+    "body": 768
+  },
+  {
+    "check": "target 768px: no document horizontal overflow",
+    "result": "pass",
+    "viewport": 768,
+    "document": 768,
+    "body": 768
+  },
+  {
+    "check": "console 1280px: no document horizontal overflow",
+    "result": "pass",
+    "viewport": 1280,
+    "document": 1280,
+    "body": 1280
+  },
+  {
+    "check": "target 1280px: no document horizontal overflow",
+    "result": "pass",
+    "viewport": 1280,
+    "document": 1280,
+    "body": 1280
+  },
+  {
+    "check": "console 1440px: no document horizontal overflow",
+    "result": "pass",
+    "viewport": 1440,
+    "document": 1440,
+    "body": 1440
+  },
+  {
+    "check": "target 1440px: no document horizontal overflow",
+    "result": "pass",
+    "viewport": 1440,
+    "document": 1440,
+    "body": 1440
+  },
+  {
+    "check": "console effective 200% zoom (1440×900 to 720×450 CSS viewport): no document horizontal overflow",
+    "result": "pass",
+    "viewport": 720,
+    "document": 720,
+    "body": 720
+  },
+  {
+    "check": "console desktop: automated WCAG audit",
+    "result": "pass",
+    "violations": [],
+    "incomplete": [],
+    "passes": 28
+  },
+  {
+    "check": "console narrow: automated WCAG audit",
+    "result": "pass",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".drawer-line:nth-child(2) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(3) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(3) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(3) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(4) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(4) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(4) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(5) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(5) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(5) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          }
+        ]
+      }
+    ],
+    "passes": 28
+  },
+  {
+    "check": "target effective 200% zoom (1440×900 to 720×450 CSS viewport): no document horizontal overflow",
+    "result": "pass",
+    "viewport": 720,
+    "document": 720,
+    "body": 720
+  },
+  {
+    "check": "target desktop: automated WCAG audit",
+    "result": "pass",
+    "violations": [],
+    "incomplete": [],
+    "passes": 25
+  },
+  {
+    "check": "target narrow: automated WCAG audit",
+    "result": "pass",
+    "violations": [],
+    "incomplete": [],
+    "passes": 25
+  },
+  {
+    "check": "Fixtures navigation: keyboard reachable with visible focus",
+    "result": "pass",
+    "focusVisible": true,
+    "outlineStyle": "solid",
+    "outlineWidth": "2px",
+    "boxShadow": "none"
+  },
+  {
+    "check": "Fixture replay: keyboard reachable with visible focus",
+    "result": "pass",
+    "focusVisible": true,
+    "outlineStyle": "solid",
+    "outlineWidth": "2px",
+    "boxShadow": "none"
+  },
+  {
+    "check": "fixture detail: automated WCAG audit",
+    "result": "pass",
+    "violations": [],
+    "incomplete": [],
+    "passes": 24
+  },
+  {
+    "check": "fixture navigation and replay work using keyboard only",
+    "result": "pass"
+  },
+  {
+    "check": "Target handler action: keyboard reachable with visible focus",
+    "result": "pass",
+    "focusVisible": true,
+    "outlineStyle": "solid",
+    "outlineWidth": "2px",
+    "boxShadow": "none"
+  },
+  {
+    "check": "measured evidence: automated WCAG audit",
+    "result": "pass",
+    "violations": [],
+    "incomplete": [],
+    "passes": 30
+  },
+  {
+    "check": "render matrix has no unhandled browser errors",
+    "result": "pass",
+    "errors": []
+  },
+  {
+    "check": "global abort remains visible in 390×420 after scrolling",
+    "result": "pass",
+    "top": 18.390625,
+    "bottom": 61.765625,
+    "viewport": 420,
+    "unobscured": true
+  },
+  {
+    "check": "global abort remains visible in 720×420 after scrolling",
+    "result": "pass",
+    "top": 18.390625,
+    "bottom": 61.765625,
+    "viewport": 420,
+    "unobscured": true
+  },
+  {
+    "check": "Global active abort: keyboard reachable with visible focus",
+    "result": "pass",
+    "focusVisible": true,
+    "outlineStyle": "solid",
+    "outlineWidth": "2px",
+    "boxShadow": "none"
+  },
+  {
+    "check": "mocked scoped abort preserves cleanup-pending ownership and uncertainty",
+    "result": "pass",
+    "mutations": [
+      {
+        "method": "POST",
+        "path": "/api/drafts/d-rendered-browser-fixture/reseal"
+      }
+    ]
+  },
+  {
+    "check": "active recovery state: automated WCAG audit",
+    "result": "pass",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".drawer-line:nth-child(1) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(1) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(1) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(2) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(2) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(2) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(3) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(3) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(3) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(4) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(4) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(4) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(5) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(5) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(5) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(6) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(6) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(6) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(7) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(7) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(7) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(8) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(8) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(8) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(9) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(9) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(9) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(10) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(10) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(10) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(11) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(11) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(11) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(12) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(12) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(12) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(13) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(13) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(13) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(14) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(14) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(14) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(15) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(15) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(15) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(16) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(16) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(16) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(17) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(17) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(17) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(18) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(18) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(18) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(19) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(19) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(19) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(20) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(20) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(20) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(21) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(21) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(21) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(22) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(22) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(22) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(23) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(23) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(23) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(24) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(24) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(24) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(25) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(25) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(25) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(26) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(26) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(26) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(27) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(27) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(27) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(28) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(28) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(28) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(29) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(29) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(29) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(30) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(30) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(30) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(31) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(31) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(31) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(32) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(32) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(32) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(33) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(33) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(33) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(34) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(34) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(34) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(35) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(35) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(35) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(36) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(36) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(36) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(37) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(37) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(37) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(38) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(38) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(38) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(39) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(39) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(39) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(40) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(40) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(40) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(41) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(41) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(41) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(42) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(42) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(42) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(43) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(43) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(43) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(44) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(44) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(44) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(45) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(45) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(45) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(46) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(46) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(46) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(47) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(47) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(47) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(48) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(48) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(48) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(49) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(49) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(49) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(50) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(50) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(50) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(51) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(51) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(51) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(52) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(52) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(52) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(53) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(53) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(53) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(54) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(54) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(54) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(55) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(55) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(55) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(56) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(56) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(56) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(57) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(57) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(57) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(58) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(58) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(58) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(59) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(59) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(59) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(60) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(60) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(60) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(61) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(61) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(61) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(62) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(62) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(62) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(63) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(63) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(63) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(64) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(64) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(64) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(65) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(65) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(65) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          }
+        ]
+      }
+    ],
+    "passes": 27
+  },
+  {
+    "check": "drawer restores collapse and bounded height, pauses follow on scroll and tracks unread entries",
+    "result": "pass",
+    "restored_height": 540,
+    "unread_added": 3
+  },
+  {
+    "check": "planner fallback and diagnostics: automated WCAG audit",
+    "result": "pass",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".drawer-line:nth-child(1) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(1) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(1) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(2) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(2) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(2) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(3) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(3) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(3) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(4) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(4) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(4) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(5) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(5) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(5) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(6) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(6) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(6) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(7) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(7) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(7) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(8) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(8) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(8) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(9) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(9) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(9) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(10) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(10) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(10) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(11) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(11) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(11) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(12) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(12) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(12) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(13) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(13) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(13) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(14) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(14) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(14) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(15) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(15) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(15) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(16) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(16) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(16) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(17) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(17) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(17) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(18) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(18) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(18) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(19) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(19) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(19) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(20) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(20) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(20) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(21) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(21) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(21) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(22) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(22) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(22) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(23) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(23) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(23) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(24) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(24) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(24) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(25) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(25) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(25) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(26) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(26) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(26) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(27) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(27) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(27) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(28) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(28) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(28) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(29) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(29) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(29) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(30) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(30) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(30) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(31) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(31) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(31) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(32) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(32) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(32) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(33) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(33) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(33) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(34) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(34) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(34) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(35) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(35) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(35) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(36) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(36) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(36) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(37) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(37) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(37) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(38) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(38) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(38) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(39) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(39) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(39) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(40) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(40) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(40) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(41) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(41) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(41) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(42) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(42) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(42) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(43) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(43) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(43) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(44) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(44) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(44) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(45) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(45) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(45) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(46) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(46) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(46) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(47) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(47) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(47) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(48) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(48) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(48) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(49) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(49) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(49) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(50) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(50) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(50) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(51) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(51) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(51) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(52) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(52) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(52) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(53) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(53) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(53) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(54) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(54) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(54) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(55) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(55) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(55) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(56) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(56) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(56) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(57) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(57) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(57) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(58) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(58) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(58) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(59) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(59) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(59) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(60) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(60) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(60) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(61) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(61) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(61) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(62) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(62) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(62) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(63) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(63) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(63) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(64) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(64) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(64) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(65) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(65) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(65) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(66) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(66) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(66) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(67) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(67) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(67) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(68) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(68) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(68) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(69) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(69) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(69) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(70) > time"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(70) > .tool"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          },
+          {
+            "target": [
+              ".drawer-line:nth-child(70) > span:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          }
+        ]
+      }
+    ],
+    "passes": 27
+  },
+  {
+    "check": "planner fallback desktop: no document horizontal overflow",
+    "result": "pass",
+    "viewport": 1440,
+    "document": 1440,
+    "body": 1440
+  },
+  {
+    "check": "fallback provenance remains visible at390px",
+    "result": "pass",
+    "top": 745.375,
+    "bottom": 796.421875,
+    "viewport": 844,
+    "unobscured": true
+  },
+  {
+    "check": "planner fallback narrow: no document horizontal overflow",
+    "result": "pass",
+    "viewport": 390,
+    "document": 390,
+    "body": 390
+  },
+  {
+    "check": "diagnostic text colors satisfy4.5:1 normal text contrast",
+    "result": "pass",
+    "colors": [
+      {
+        "color": "rgb(160, 169, 186)",
+        "background": "rgb(9, 11, 15)",
+        "ratio": 8.326224920540096
+      },
+      {
+        "color": "rgb(160, 169, 186)",
+        "background": "rgb(9, 11, 15)",
+        "ratio": 8.326224920540096
+      },
+      {
+        "color": "rgb(232, 234, 239)",
+        "background": "rgb(9, 11, 15)",
+        "ratio": 16.36063359340636
+      }
+    ]
+  },
+  {
+    "check": "fallback provenance explicitly identifies requested xai and actual stub",
+    "result": "pass",
+    "source": "intercepted browser response; no provider contacted"
+  },
+  {
+    "check": "mocked operator states have no unhandled browser errors",
+    "result": "pass",
+    "errors": []
+  }
+]

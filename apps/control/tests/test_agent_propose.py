@@ -1,13 +1,12 @@
-import os
-
+import pytest
 from fastapi.testclient import TestClient
 
 from sealed_agent.tools import ALLOWED_TOOLS, FORBIDDEN_TOOLS, Tools
 
-os.environ.pop("XAI_API_KEY", None)
-os.environ.pop("LLM_BASE_URL", None)
-os.environ.pop("LLM_MODEL", None)
-os.environ.pop("LLM_API_KEY", None)
+
+@pytest.fixture(autouse=True)
+def stub_planner(monkeypatch):
+    monkeypatch.setenv("PLANNER", "stub")
 
 
 def test_tool_registry_has_no_inject() -> None:
