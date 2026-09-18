@@ -1,0 +1,11 @@
+[project]
+name = "sealed"
+version = "0.1.0"
+description = "Sealed chaos control plane"
+readme = "README.md"
+requires-python = ">=3.12"
+
+[project.optional-dependencies]
+cli = [
+    "rich>=13.7,<15",
+]

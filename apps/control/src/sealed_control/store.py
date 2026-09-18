@@ -3,12 +3,50 @@ from __future__ import annotations
 import time
 from typing import Any
 
+_SECRET = ("key", "token", "secret", "password", "authorization")
+
+
+def _redact(value: Any) -> Any:
+    if isinstance(value, dict):
+        out = {}
+        for key, item in value.items():
+            low = str(key).lower()
+            if any(part in low for part in _SECRET):
+                out[key] = "[redacted]"
+            else:
+                out[key] = _redact(item)
+        return out
+    if isinstance(value, list):
+        return [_redact(item) for item in value[:20]]
+    return value
+
+
+def _summary(result: Any) -> str:
+    if result is None:
+        return "none"
+    if isinstance(result, str):
+        return result[:160]
+    if isinstance(result, dict):
+        if result.get("id") and result.get("catalog_id"):
+            return (
+                f"draft {result.get('id')} {result.get('catalog_id')} "
+                f"{result.get('status')}"
+            )
+        if "verdict" in result:
+            return f"seal {result.get('id')} {result.get('catalog_id')} {result.get('verdict')}"
+        return ",".join(str(key) for key in result.keys())[:160]
+    if isinstance(result, list):
+        return f"{len(result)} items"
+    return str(result)[:160]
+
 
 class Store:
     def __init__(self) -> None:
         self.drafts: dict[str, dict[str, Any]] = {}
         self.seals: dict[str, dict[str, Any]] = {}
         self.game_days: dict[str, dict[str, Any]] = {}
+        self.agent_trace: list[dict[str, Any]] = []
+        self.planner_name = "stub"
         self._seq = 0
 
     def new_id(self, prefix: str) -> str:
@@ -55,3 +93,25 @@ class Store:
 
     def list_game_days(self) -> list[dict[str, Any]]:
         return list(self.game_days.values())
+
+    def set_planner(self, name: str) -> None:
+        self.planner_name = name
+
+    def append_trace(self, tool: str, args: dict[str, Any] | None, result: Any) -> None:
+        self.agent_trace.append(
+            {
+                "ts": time.time(),
+                "tool": tool,
+                "args_redacted": _redact(args or {}),
+                "result_summary": _summary(result),
+            }
+        )
+        self.agent_trace = self.agent_trace[-200:]
+
+    def agent_snapshot(self) -> dict[str, Any]:
+        last = self.agent_trace[-1]["tool"] if self.agent_trace else ""
+        return {
+            "planner": self.planner_name,
+            "last_tool": last,
+            "trace": list(self.agent_trace),
+        }

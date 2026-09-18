@@ -11,21 +11,38 @@ from sealed_agent.tools import ALLOWED_TOOLS, Tools
 LLM_TIMEOUT_S = 20.0
 
 
+def planner_label() -> str:
+    settings = _llm_settings()
+    if settings is None:
+        return "stub"
+    base_url, _, _ = settings
+    if "11434" in base_url or "ollama" in base_url.lower():
+        return "llama"
+    return "llm"
+
+
 def stub_propose(tools: Tools) -> dict[str, Any]:
-    seal = tools.get_seal()
+    set_planner = getattr(tools.store, "set_planner", None)
+    if callable(set_planner):
+        set_planner("stub")
+    seal = tools.call("get_seal")
+    tools.call("list_experiments")
+    targets = tools.call("list_targets")
     if (
         not seal
         or seal.get("catalog_id") != "redis_down"
         or seal.get("verdict") not in {"fail", "aborted"}
     ):
+        explanation = (
+            tools.call("explain_failure")
+            if seal
+            else "No failed or aborted redis_down seal; nothing to propose."
+        )
         return {
             "draft": None,
-            "explanation": (
-                tools.explain_failure(seal)
-                if seal
-                else "No failed or aborted redis_down seal; nothing to propose."
-            ),
+            "explanation": explanation,
             "planner": "stub",
+            **_trace_fields(tools),
         }
 
     existing = [
@@ -36,17 +53,18 @@ def stub_propose(tools: Tools) -> dict[str, Any]:
         and draft.get("status") == "draft"
     ]
     if existing:
+        explanation = tools.call("explain_failure") + " worker_drop draft already proposed; not unsealing."
         return {
             "draft": existing[-1],
-            "explanation": tools.explain_failure(seal)
-            + " worker_drop draft already proposed; not unsealing.",
+            "explanation": explanation,
             "planner": "stub",
+            **_trace_fields(tools),
         }
 
-    explanation = tools.explain_failure(seal)
-    targets = tools.list_targets()
-    target = "worker" if "worker" in targets else (targets[0] if targets else "worker")
-    draft = tools.propose_experiment(
+    explanation = tools.call("explain_failure")
+    target = "worker" if "worker" in (targets or []) else ((targets or ["worker"])[0])
+    draft = tools.call(
+        "propose_experiment",
         catalog_id="worker_drop",
         target=target,
         environment="demo",
@@ -55,7 +73,16 @@ def stub_propose(tools: Tools) -> dict[str, Any]:
         "draft": draft,
         "explanation": explanation + " Proposed worker_drop as a draft. Not unsealing.",
         "planner": "stub",
+        **_trace_fields(tools),
     }
+
+
+def _trace_fields(tools: Tools) -> dict[str, Any]:
+    snap = getattr(tools.store, "agent_snapshot", None)
+    if callable(snap):
+        data = snap()
+        return {"trace": data.get("trace") or []}
+    return {"trace": []}
 
 
 def _llm_settings() -> tuple[str, str, str] | None:
@@ -196,14 +223,23 @@ def llm_propose(tools: Tools) -> dict[str, Any]:
             )
     if draft is None:
         return stub_propose(tools)
+    label = planner_label()
+    set_planner = getattr(tools.store, "set_planner", None)
+    if callable(set_planner):
+        set_planner(label)
     return {
         "draft": draft,
         "explanation": explanation or "LLM proposed a draft only; not unsealing.",
-        "planner": "llm",
+        "planner": label,
+        **_trace_fields(tools),
     }
 
 
 def propose(tools: Tools) -> dict[str, Any]:
+    label = planner_label()
+    set_planner = getattr(tools.store, "set_planner", None)
+    if callable(set_planner):
+        set_planner(label)
     if _llm_settings() is None:
         return stub_propose(tools)
     try:

@@ -36,6 +36,7 @@ export const api = {
   reseal: (id) => req(`/api/drafts/${id}/reseal`, { method: "POST" }),
   seals: () => req("/api/seals"),
   propose: () => req("/api/agent/propose", { method: "POST" }),
+  agentTrace: () => req("/api/agent/trace"),
   fixtures: () => req("/api/fixtures"),
   controlHealth: () => req("/api/health"),
   createGameDay: (steps) =>

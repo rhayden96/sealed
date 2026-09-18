@@ -378,7 +378,15 @@ def create_app(
             policy=request.app.state.policy,
             store=request.app.state.store,
         )
-        return agent_propose_plan(tools)
+        result = agent_propose_plan(tools)
+        snap = request.app.state.store.agent_snapshot()
+        result["planner"] = snap["planner"]
+        result["trace"] = snap["trace"]
+        return result
+
+    @app.get("/agent/trace")
+    async def agent_trace(request: Request) -> dict[str, Any]:
+        return request.app.state.store.agent_snapshot()
 
     @app.get("/fixtures")
     async def list_fixtures() -> dict[str, Any]:

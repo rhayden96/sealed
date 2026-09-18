@@ -4,6 +4,7 @@ dist/
 __pycache__/
 *.egg-info/
 .env
+.env.local
 .grok/
 .pytest_cache/
 *.zip

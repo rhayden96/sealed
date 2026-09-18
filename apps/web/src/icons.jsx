@@ -140,9 +140,7 @@ export function IconGameDay() {
 }
 
 export const NAV = [
-  { id: "live", label: "Live", Icon: IconLive },
-  { id: "catalog", label: "Catalog", Icon: IconCatalog },
-  { id: "run", label: "Run", Icon: IconRun },
+  { id: "ops", label: "Console", Icon: IconLive },
   { id: "gameday", label: "Game day", Icon: IconGameDay },
   { id: "tape", label: "Tape", Icon: IconTape },
   { id: "fixtures", label: "Fixtures", Icon: IconFixtures },

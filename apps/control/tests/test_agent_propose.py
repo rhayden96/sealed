@@ -32,6 +32,12 @@ def test_propose_without_redis_down_seal(client: TestClient) -> None:
     body = response.json()
     assert body["draft"] is None
     assert body["planner"] == "stub"
+    tools = [item["tool"] for item in body.get("trace") or []]
+    assert "get_seal" in tools
+    snap = client.get("/agent/trace")
+    assert snap.status_code == 200
+    assert snap.json()["planner"] == "stub"
+    assert snap.json()["trace"]
 
 
 def test_propose_worker_drop_after_aborted_redis_down(client: TestClient) -> None:

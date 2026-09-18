@@ -116,4 +116,8 @@ class Tools:
         if name in FORBIDDEN_TOOLS:
             raise PermissionError(f"tool forbidden: {name}")
         method = getattr(self, name)
-        return method(**kwargs)
+        result = method(**kwargs)
+        append = getattr(self.store, "append_trace", None)
+        if callable(append):
+            append(name, kwargs, result)
+        return result

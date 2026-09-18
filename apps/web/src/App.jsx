@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api.js";
 import {
   FAULT_ICONS,
@@ -98,6 +98,8 @@ const WATCH = {
 const DEMO_DAY = ["handler_latency", "redis_down", "worker_drop"];
 
 const SIDE_KEY = "sealed-sidebar-collapsed";
+const DRAWER_H_KEY = "sealed-agent-height";
+const DRAWER_C_KEY = "sealed-agent-collapsed";
 
 export default function App() {
   const [collapsed, setCollapsed] = useState(() => {
@@ -107,7 +109,7 @@ export default function App() {
       return false;
     }
   });
-  const [panel, setPanel] = useState("live");
+  const [panel, setPanel] = useState("ops");
   const [catalog, setCatalog] = useState([]);
   const [drafts, setDrafts] = useState([]);
   const [seals, setSeals] = useState([]);
@@ -120,6 +122,26 @@ export default function App() {
   const [metrics, setMetrics] = useState(null);
   const [controlDown, setControlDown] = useState(false);
   const [gameDay, setGameDay] = useState(null);
+  const [agentTrace, setAgentTrace] = useState([]);
+  const [plannerName, setPlannerName] = useState("stub");
+  const [lastTool, setLastTool] = useState("");
+  const [drawerCollapsed, setDrawerCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(DRAWER_C_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const [drawerHeight, setDrawerHeight] = useState(() => {
+    try {
+      const raw = Number(localStorage.getItem(DRAWER_H_KEY));
+      return Number.isFinite(raw) && raw >= 40 ? raw : 160;
+    } catch {
+      return 160;
+    }
+  });
+  const logEnd = useRef(null);
+  const drag = useRef(null);
 
   const selected = drafts.find((d) => d.id === selectedId) || null;
   const experiment = catalog.find((item) => item.id === catalogId);
@@ -212,6 +234,72 @@ export default function App() {
     return () => clearInterval(id);
   }, [gameDay?.id]);
 
+  useEffect(() => {
+    if (drawerCollapsed) return undefined;
+    let cancelled = false;
+    async function pull() {
+      try {
+        const snap = await api.agentTrace();
+        if (cancelled) return;
+        setAgentTrace(snap.trace || []);
+        setPlannerName(snap.planner || "stub");
+        setLastTool(snap.last_tool || "");
+      } catch {
+        /* ignore */
+      }
+    }
+    pull();
+    const id = setInterval(pull, 2000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [drawerCollapsed]);
+
+  useEffect(() => {
+    logEnd.current?.scrollIntoView({ block: "end" });
+  }, [agentTrace, drawerCollapsed]);
+
+  function persistDrawer(height, collapsed) {
+    try {
+      localStorage.setItem(DRAWER_H_KEY, String(height));
+      localStorage.setItem(DRAWER_C_KEY, collapsed ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function onSplitDown(event) {
+    event.preventDefault();
+    drag.current = { startY: event.clientY, startH: drawerHeight };
+    function move(ev) {
+      if (!drag.current) return;
+      const max = window.innerHeight * 0.5;
+      const next = Math.min(
+        max,
+        Math.max(40, drag.current.startH + (drag.current.startY - ev.clientY)),
+      );
+      setDrawerHeight(next);
+      persistDrawer(next, false);
+      setDrawerCollapsed(false);
+    }
+    function up() {
+      drag.current = null;
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseup", up);
+    }
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+  }
+
+  function toggleDrawer() {
+    setDrawerCollapsed((current) => {
+      const next = !current;
+      persistDrawer(drawerHeight, next);
+      return next;
+    });
+  }
+
   async function createDraft() {
     if (!experiment) return;
     setError("");
@@ -279,7 +367,7 @@ export default function App() {
       if (result.draft?.id) {
         setSelectedId(result.draft.id);
         setHelper("");
-        setPanel("run");
+        setPanel("ops");
       } else {
         setHelper(
           result.explanation ||
@@ -344,143 +432,139 @@ export default function App() {
         ) : null}
 
         <div className="content">
-          {panel === "live" ? (
-            <section className="panel">
-              <h2>Live</h2>
-              <p className={`status-word ${healthMoved ? "degraded" : "ok"}`}>
-                {healthMoved ? "DEGRADED" : "OK"}
-              </p>
-              <div className="tiles">
-                <article className={`tile ${health?.api === "down" ? "down" : "ok"}`}>
-                  <header>
-                    <IconApi /> API
-                  </header>
-                  <strong>{health?.api ?? "—"}</strong>
-                </article>
-                <article
-                  className={`tile ${health?.redis === "down" ? "down" : "ok"}`}
-                >
-                  <header>
-                    <IconDatabase /> Redis
-                  </header>
-                  <strong>{health?.redis ?? "—"}</strong>
-                </article>
-                <article
-                  className={`tile ${health?.worker === "down" ? "down" : "ok"}`}
-                >
-                  <header>
-                    <IconQueue /> Worker
-                  </header>
-                  <strong>{health?.worker ?? "—"}</strong>
-                </article>
-              </div>
-              <p className="stats">
-                <span>
-                  p95 <b>{metrics ? Number(metrics.p95_ms).toFixed(0) : "—"}</b> ms
-                </span>
-                <span>
-                  error <b>{metrics ? Number(metrics.error_rate).toFixed(2) : "—"}</b>
-                </span>
-                <span>
-                  inflight <b>{metrics?.inflight ?? "—"}</b>
-                </span>
-              </p>
-            </section>
-          ) : null}
-
-          {panel === "catalog" ? (
-            <section className="panel">
-              <h2>Catalog</h2>
-              <div className="catalog-grid">
-                {catalog.map((item) => {
-                  const Icon = FAULT_ICONS[item.id] || IconApi;
-                  return (
+          {panel === "ops" ? (
+            <div className="ops">
+              <section className="panel" id="sec-live">
+                <h2>Live</h2>
+                <p className={`status-word ${healthMoved ? "degraded" : "ok"}`}>
+                  {healthMoved ? "DEGRADED" : "OK"}
+                </p>
+                <div className="tiles">
+                  <article className={`tile ${health?.api === "down" ? "down" : "ok"}`}>
+                    <header>
+                      <IconApi /> API
+                    </header>
+                    <strong>{health?.api ?? "—"}</strong>
+                  </article>
+                  <article
+                    className={`tile ${health?.redis === "down" ? "down" : "ok"}`}
+                  >
+                    <header>
+                      <IconDatabase /> Redis
+                    </header>
+                    <strong>{health?.redis ?? "—"}</strong>
+                  </article>
+                  <article
+                    className={`tile ${health?.worker === "down" ? "down" : "ok"}`}
+                  >
+                    <header>
+                      <IconQueue /> Worker
+                    </header>
+                    <strong>{health?.worker ?? "—"}</strong>
+                  </article>
+                </div>
+                <p className="stats">
+                  <span>
+                    p95 <b>{metrics ? Number(metrics.p95_ms).toFixed(0) : "—"}</b> ms
+                  </span>
+                  <span>
+                    error <b>{metrics ? Number(metrics.error_rate).toFixed(2) : "—"}</b>
+                  </span>
+                  <span>
+                    inflight <b>{metrics?.inflight ?? "—"}</b>
+                  </span>
+                </p>
+              </section>
+              <div className="ops-right">
+                <section className="panel" id="sec-catalog">
+                  <h2>Catalog</h2>
+                  <div className="catalog-grid">
+                    {catalog.map((item) => {
+                      const Icon = FAULT_ICONS[item.id] || IconApi;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          className={item.id === catalogId ? "fault active" : "fault"}
+                          onClick={() => {
+                            setCatalogId(item.id);
+                            setHelper("");
+                            setError("");
+                          }}
+                        >
+                          <Icon />
+                          <h3>{item.id}</h3>
+                          <p>
+                            {item.description} · {item.default_duration_s}s ·{" "}
+                            {(item.allowed_targets || []).join(", ")}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+                <section className="panel" id="sec-run">
+                  <h2>Run</h2>
+                  <p className="run-meta">
+                    {experiment ? (
+                      <>
+                        <strong>{experiment.id}</strong> · demo ·{" "}
+                        {experiment.allowed_targets?.[0]} ·{" "}
+                        {experiment.default_duration_s}s
+                      </>
+                    ) : (
+                      "Select an experiment."
+                    )}
+                    {selected ? (
+                      <>
+                        <br />
+                        {selected.id} · {selected.status}
+                        {selected.source === "agent" ? " · agent" : ""}
+                      </>
+                    ) : null}
+                  </p>
+                  {phase === "none" || phase === "completed" ? (
                     <button
-                      key={item.id}
                       type="button"
-                      className={item.id === catalogId ? "fault active" : "fault"}
-                      onClick={() => {
-                        setCatalogId(item.id);
-                        setHelper("");
-                        setError("");
-                      }}
+                      className="primary"
+                      disabled={!experiment}
+                      onClick={createDraft}
                     >
-                      <Icon />
-                      <h3>{item.id}</h3>
-                      <p>
-                        {item.description} · {item.default_duration_s}s ·{" "}
-                        {(item.allowed_targets || []).join(", ")}
-                      </p>
+                      {phase === "completed" ? "New draft" : "Create draft"}
                     </button>
-                  );
-                })}
+                  ) : null}
+                  {phase === "draft" ? (
+                    <button
+                      type="button"
+                      className="primary"
+                      onClick={approveAndUnseal}
+                    >
+                      Approve + unseal
+                    </button>
+                  ) : null}
+                  {phase === "unsealed" ? (
+                    <button type="button" className="primary abort" onClick={abort}>
+                      Abort / reseal
+                    </button>
+                  ) : null}
+                  <div className="ghosts">
+                    <button
+                      type="button"
+                      className="ghost"
+                      disabled={!canUnseal}
+                      onClick={unsealOnly}
+                    >
+                      Unseal
+                    </button>
+                    <button type="button" className="ghost" onClick={propose}>
+                      Propose
+                    </button>
+                  </div>
+                  {helper ? <p className="helper">{helper}</p> : null}
+                  {error && panel === "ops" ? <p className="error">{error}</p> : null}
+                </section>
               </div>
-            </section>
-          ) : null}
-
-          {panel === "run" ? (
-            <section className="panel">
-              <h2>Run</h2>
-              <p className="run-meta">
-                {experiment ? (
-                  <>
-                    <strong>{experiment.id}</strong> · demo ·{" "}
-                    {experiment.allowed_targets?.[0]} ·{" "}
-                    {experiment.default_duration_s}s
-                  </>
-                ) : (
-                  "Select an experiment."
-                )}
-                {selected ? (
-                  <>
-                    <br />
-                    {selected.id} · {selected.status}
-                    {selected.source === "agent" ? " · agent" : ""}
-                  </>
-                ) : null}
-              </p>
-
-              {phase === "none" || phase === "completed" ? (
-                <button
-                  type="button"
-                  className="primary"
-                  disabled={!experiment}
-                  onClick={createDraft}
-                >
-                  {phase === "completed" ? "New draft" : "Create draft"}
-                </button>
-              ) : null}
-              {phase === "draft" ? (
-                <button
-                  type="button"
-                  className="primary"
-                  onClick={approveAndUnseal}
-                >
-                  Approve + unseal
-                </button>
-              ) : null}
-              {phase === "unsealed" ? (
-                <button type="button" className="primary abort" onClick={abort}>
-                  Abort / reseal
-                </button>
-              ) : null}
-
-              <div className="ghosts">
-                <button
-                  type="button"
-                  className="ghost"
-                  disabled={!canUnseal}
-                  onClick={unsealOnly}
-                >
-                  Unseal
-                </button>
-                <button type="button" className="ghost" onClick={propose}>
-                  Propose
-                </button>
-              </div>
-              {helper ? <p className="helper">{helper}</p> : null}
-              {error ? <p className="error">{error}</p> : null}
-            </section>
+            </div>
           ) : null}
 
           {panel === "gameday" ? (
@@ -683,6 +767,42 @@ export default function App() {
             </section>
           ) : null}
         </div>
+
+        <aside
+          className="drawer"
+          style={{ height: drawerCollapsed ? 40 : drawerHeight }}
+        >
+          <div
+            className="drawer-split"
+            onMouseDown={onSplitDown}
+            role="separator"
+            aria-orientation="horizontal"
+          />
+          <div className="drawer-head">
+            <b>AGENT</b>
+            <span>{plannerName}</span>
+            <span>{lastTool || "—"}</span>
+            <button type="button" onClick={toggleDrawer}>
+              {drawerCollapsed ? "Open" : "Collapse"}
+            </button>
+          </div>
+          {drawerCollapsed ? null : (
+            <div className="drawer-log">
+              {agentTrace.length === 0 ? (
+                <div className="muted">No tool calls yet. Propose to fill this log.</div>
+              ) : (
+                agentTrace.map((line, index) => (
+                  <div className="drawer-line" key={`${line.ts}-${index}`}>
+                    <time>{formatTime(line.ts)}</time>
+                    <span className="tool">{line.tool}</span>
+                    <span>{line.result_summary}</span>
+                  </div>
+                ))
+              )}
+              <div ref={logEnd} />
+            </div>
+          )}
+        </aside>
       </div>
     </div>
   );
