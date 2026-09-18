@@ -1,0 +1,14 @@
+{
+  "id": "s-fx-latency",
+  "draft_id": "d-fx-latency",
+  "catalog_id": "handler_latency",
+  "environment": "demo",
+  "target": "api",
+  "duration_s": 5,
+  "hypothesis": {
+    "slo": { "p95_ms": 500, "error_rate": 0.01 },
+    "must": ["latency_recovers_after_reseal"]
+  },
+  "verdict": "pass",
+  "created_at": 1
+}

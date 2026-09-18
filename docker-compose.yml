@@ -1,0 +1,94 @@
+services:
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 20
+
+  target:
+    build: ./apps/target
+    ports:
+      - "8080:8080"
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      UNSEAL_TOKEN: demo
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')",
+        ]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  worker:
+    build: ./apps/target
+    command: python -m sealed_target.worker
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  control:
+    build:
+      context: .
+      dockerfile: apps/control/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      TARGET_URL: http://target:8080
+      UNSEAL_TOKEN: demo
+      CATALOG_PATH: /app/experiments/catalog.yaml
+      POLICY_PATH: /app/experiments/policy.yaml
+      FIXTURES_PATH: /app/fixtures/seals
+    volumes:
+      - ./experiments:/app/experiments:ro
+      - ./fixtures:/app/fixtures:ro
+    depends_on:
+      target:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8081/health')",
+        ]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  web:
+    build: ./apps/web
+    ports:
+      - "5173:5173"
+    environment:
+      CONTROL_URL: http://control:8081
+      TARGET_URL: http://target:8080
+    depends_on:
+      control:
+        condition: service_healthy
+      target:
+        condition: service_healthy
+
+  target-web:
+    build: ./apps/target-web
+    ports:
+      - "5174:5174"
+    environment:
+      TARGET_URL: http://target:8080
+    depends_on:
+      target:
+        condition: service_healthy

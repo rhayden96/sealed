@@ -1,0 +1,50 @@
+# Closed fault catalog. Only these three ids may be drafted.
+# Policy is the only unseal authority (see policy.yaml).
+version: 1
+experiments:
+  - id: redis_down
+    action: redis_down
+    description: Cut Redis so POST /login fails closed.
+    default_duration_s: 15
+    allowed_targets:
+      - redis
+    params: {}
+    auto_unseal_eligible: false
+    hypothesis:
+      slo:
+        p95_ms: 2000
+        error_rate: 1.0
+      must:
+        - fail_closed_on_redis_loss
+
+  - id: handler_latency
+    action: handler_latency
+    description: In-process delay on the API handler.
+    default_duration_s: 5
+    allowed_targets:
+      - api
+    params:
+      delay_ms: 300
+    auto_unseal_eligible: true
+    hypothesis:
+      slo:
+        p95_ms: 500
+        error_rate: 0.01
+      must:
+        - latency_recovers_after_reseal
+
+  - id: worker_drop
+    action: worker_drop
+    description: Drop a fraction of jobs at the worker.
+    default_duration_s: 15
+    allowed_targets:
+      - worker
+    params:
+      drop_rate: 0.2
+    auto_unseal_eligible: false
+    hypothesis:
+      slo:
+        p95_ms: 1000
+        error_rate: 0.25
+      must:
+        - dropped_jobs_do_not_corrupt_queue

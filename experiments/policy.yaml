@@ -1,0 +1,30 @@
+# Policy v0. Clerk is the only unseal authority.
+# Unseal iff every allow rule holds and no deny rule matches.
+version: 1
+
+environment_allowlist:
+  - demo
+
+environment_denylist:
+  - prod
+
+target_allowlist:
+  - api
+  - redis
+  - worker
+
+max_duration_s: 20
+max_concurrent_unsealed: 1
+catalog_id_required: true
+
+# Auto-unseal only this rule. Everything else needs approved: true.
+auto_unseal:
+  enabled: true
+  environment: demo
+  catalog_ids:
+    - handler_latency
+  max_duration_s: 5
+
+# Deny is absolute. Prod never unseals, even if approved.
+deny:
+  - environment: prod
